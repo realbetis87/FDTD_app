@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31321.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FDTD_app", "FDTD_app\FDTD_app.csproj", "{962A9F81-5146-4E11-8F51-B2DFAA103D3F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{962A9F81-5146-4E11-8F51-B2DFAA103D3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{962A9F81-5146-4E11-8F51-B2DFAA103D3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{962A9F81-5146-4E11-8F51-B2DFAA103D3F}.Debug|x64.ActiveCfg = Debug|x64
+		{962A9F81-5146-4E11-8F51-B2DFAA103D3F}.Debug|x64.Build.0 = Debug|x64
+		{962A9F81-5146-4E11-8F51-B2DFAA103D3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{962A9F81-5146-4E11-8F51-B2DFAA103D3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{962A9F81-5146-4E11-8F51-B2DFAA103D3F}.Release|x64.ActiveCfg = Release|x64
+		{962A9F81-5146-4E11-8F51-B2DFAA103D3F}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BD5194A7-4701-493B-94B6-0FCE4D1C96FB}
+	EndGlobalSection
+EndGlobal
