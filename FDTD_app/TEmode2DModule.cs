@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Windows.Forms;
+using Complex = System.Numerics.Complex;
 
 namespace FDTD_app
 {
@@ -13,6 +15,7 @@ namespace FDTD_app
         private double freq, bw;
         private int c2l;
         public double dx, dy, dt, ta;
+        public int pulseLength, simLength;
 
         public int M, N;
 
@@ -35,6 +38,15 @@ namespace FDTD_app
         private int[,] xField_pos, yField_pos;
         private double[] xAmc, xGamma, yAmc, yGamma;
 
+        //Monitors
+        public double[,,] efxReal, efyReal, efxImag, efyImag;
+        private double[] monFrequencies, constantTerm;
+        private int noFrequencies;
+
+        private int noTimeMonitors;
+        private int[,] locTimeMonitors;
+        public double[,] exTimeMonitors, eyTimeMonitors;
+
 
         public double InitializeDomain(CoreForm.domain dm1)
         {
@@ -51,6 +63,10 @@ namespace FDTD_app
 
             dt = .99 / c0 / Math.Sqrt(1 / dx / dx + 1 / dy / dy);
 
+            pulseLength = 6 * (int)(ta / dt);
+            simLength = pulseLength * dm1.noPulses;
+
+            
             // PML
             nn = 3;
             e_s = new double[pmlc];
@@ -137,43 +153,52 @@ namespace FDTD_app
             sourcesEx = 0;
             sourcesEy = 0;
 
-            for (int i = 0; i < source.Length; i++)
+            if (source == null)
             {
-                if (source[i].orientation == "Ex")
+                MessageBox.Show("No sources defined!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                for (int i = 0; i < source.Length; i++)
                 {
-                    sourcesEx++;
+                    if (source[i].orientation == "Ex")
+                    {
+                        sourcesEx++;
+                    }
+                    else
+                    {
+                        sourcesEy++;
+                    }
                 }
-                else
+
+
+                ampEx = new double[sourcesEx]; posEx = new int[sourcesEx, 2]; int iex = 0;
+                ampEy = new double[sourcesEy]; posEy = new int[sourcesEy, 2]; int iey = 0;
+
+
+
+                for (int i = 0; i < source.Length; i++)
                 {
-                    sourcesEy++;
+                    if (source[i].orientation == "Ex")
+                    {
+                        posEx[iex, 0] = (int)Math.Round((source[i].position[0] - limits[0, 0]) / (limits[0, 1] - limits[0, 0]) * (N - 1));
+                        posEx[iex, 1] = (int)Math.Round((source[i].position[1] - limits[1, 0]) / (limits[1, 1] - limits[1, 0]) * (M - 1));
+
+                        ampEx[iex] = source[i].amplitude;
+                        iex++;
+                    }
+                    else
+                    {
+                        posEy[iey, 0] = (int)Math.Round((source[i].position[0] - limits[0, 0]) / (limits[0, 1] - limits[0, 0]) * (N - 1));
+                        posEy[iey, 1] = (int)Math.Round((source[i].position[1] - limits[1, 0]) / (limits[1, 1] - limits[1, 0]) * (M - 1));
+
+                        ampEy[iey] = source[i].amplitude;
+                        iey++;
+                    }
                 }
             }
 
-
-            ampEx = new double[sourcesEx]; posEx = new int[sourcesEx, 2]; int iex = 0;
-            ampEy = new double[sourcesEy]; posEy = new int[sourcesEy, 2]; int iey = 0;
-
-
-
-            for (int i = 0; i < source.Length; i++)
-            {
-                if (source[i].orientation == "Ex")
-                {
-                    posEx[iex, 0] = (int)Math.Round((source[i].position[0] - limits[0, 0]) / (limits[0, 1] - limits[0, 0]) * (N - 1));
-                    posEx[iex, 1] = (int)Math.Round((source[i].position[1] - limits[1, 0]) / (limits[1, 1] - limits[1, 0]) * (M - 1));
-
-                    ampEx[iex] = source[i].amplitude;
-                    iex++;
-                }
-                else
-                {
-                    posEy[iey, 0] = (int)Math.Round((source[i].position[0] - limits[0, 0]) / (limits[0, 1] - limits[0, 0]) * (N - 1));
-                    posEy[iey, 1] = (int)Math.Round((source[i].position[1] - limits[1, 0]) / (limits[1, 1] - limits[1, 0]) * (M - 1));
-
-                    ampEy[iey] = source[i].amplitude;
-                    iey++;
-                }
-            }
+            
         }
 
         public void GrapheneDefinition(GrapheneForm.grapheneProperties[] grapheneLayers, double[,] limits)
@@ -184,63 +209,119 @@ namespace FDTD_app
             var ii = 0;
             var jj = 0;
 
-            int[] gr_cells = new int[grapheneLayers.Length];
-
-            for (int i = 0; i < grapheneLayers.Length; i++)
+            if (grapheneLayers == null)
             {
+                Jgrx = new double[xCells]; xAmc = new double[xCells]; xGamma = new double[xCells]; xField_pos = new int[2, xCells];
+                Jgry = new double[yCells]; yAmc = new double[yCells]; yGamma = new double[yCells]; yField_pos = new int[2, yCells];
+            }
+            else
+            {
+                int[] gr_cells = new int[grapheneLayers.Length];
+
+                for (int i = 0; i < grapheneLayers.Length; i++)
+                {
+
+
+                    if (grapheneLayers[i].orientation == "x")
+                    {
+                        gr_cells[i] = (int)Math.Round(grapheneLayers[i].length * 1e-6 / dy);
+                        yCells = yCells + gr_cells[i];
+                    }
+                    else
+                    {
+                        gr_cells[i] = (int)Math.Round(grapheneLayers[i].length * 1e-6 / dx);
+                        xCells = xCells + gr_cells[i];
+                    }
+
+                }
+
+                Jgrx = new double[xCells]; xAmc = new double[xCells]; xGamma = new double[xCells]; xField_pos = new int[2, xCells];
+                Jgry = new double[yCells]; yAmc = new double[yCells]; yGamma = new double[yCells]; yField_pos = new int[2, yCells];
+
+
+
+
+                for (int i = 0; i < grapheneLayers.Length; i++)
+                {
+                    //(Amc[i], Gamma[i]) = GrapheneConductivity.intraband_conductivity(grapheneLayers[i].temperature, grapheneLayers[i].gamma * 1e-3, grapheneLayers[i].mc);
+                    Console.WriteLine(gr_cells[i]);
+                    if (grapheneLayers[i].orientation == "x")
+                    {
+                        var constant_point = (int)Math.Round((grapheneLayers[i].startPos[0] - limits[0, 0]) / (limits[0, 1] - limits[0, 0]) * (N - 1));
+                        var starting_point = (int)Math.Round((grapheneLayers[i].startPos[1] - limits[1, 0]) / (limits[1, 1] - limits[1, 0]) * (M - 1));
+                        for (int j = 0; j < gr_cells[i]; j++)
+                        {
+                            (yAmc[jj], yGamma[jj]) = GrapheneConductivity.intraband_conductivity(grapheneLayers[i].temperature, grapheneLayers[i].gamma * 1e-3, grapheneLayers[i].mc);
+                            yField_pos[0, jj] = constant_point;
+                            yField_pos[1, jj] = starting_point + j;
+                            jj++;
+                        }
+
+                    }
+                    else
+                    {
+                        var starting_point = (int)Math.Round((grapheneLayers[i].startPos[0] - limits[0, 0]) / (limits[0, 1] - limits[0, 0]) * (N - 1));
+                        var constant_point = (int)Math.Round((grapheneLayers[i].startPos[1] - limits[1, 0]) / (limits[1, 1] - limits[1, 0]) * (M - 1));
+                        for (int j = 0; j < gr_cells[i]; j++)
+                        {
+                            (xAmc[ii], xGamma[ii]) = GrapheneConductivity.intraband_conductivity(grapheneLayers[i].temperature, grapheneLayers[i].gamma * 1e-3, grapheneLayers[i].mc);
+                            xField_pos[1, ii] = constant_point;
+                            xField_pos[0, ii] = starting_point + j;
+                            ii++;
+                        }
+
+                    }
+
+                }
+            }
+
+
+        }
+
+        public void MonitorDefinition(Monitors.monitors monitor, double[,] limits)
+        {
+            if (monitor.frequencies == null)
+            {
+                noFrequencies = 0;
+            }
+            else
+            {
+                noFrequencies = monitor.frequencies.Length;
+                monFrequencies = new double[noFrequencies];
+                constantTerm = new double[noFrequencies];
+
+
+                for (int i = 0; i < noFrequencies; i++)
+                {
+                    monFrequencies[i] = monitor.frequencies[i]*1e12;
+                    constantTerm[i] = 2 * Math.PI * monFrequencies[i] * dt;
+                }
                 
-
-                if (grapheneLayers[i].orientation == "x")
-                {
-                    gr_cells[i] = (int)Math.Round(grapheneLayers[i].length * 1e-6 / dy);
-                    yCells = yCells + gr_cells[i];
-                }
-                else
-                {
-                    gr_cells[i] = (int)Math.Round(grapheneLayers[i].length * 1e-6 / dx);
-                    xCells = xCells + gr_cells[i];
-                }
-
             }
 
-            Jgrx = new double[xCells]; xAmc = new double[xCells]; xGamma = new double[xCells]; xField_pos = new int[2, xCells];
-            Jgry = new double[yCells]; yAmc = new double[yCells]; yGamma = new double[yCells]; yField_pos = new int[2, yCells];
+            efxReal = new double[N, M, noFrequencies];
+            efxImag = new double[N, M, noFrequencies];
+            efyReal = new double[N, M, noFrequencies];
+            efyImag = new double[N, M, noFrequencies];
 
-            
-
-
-            for (int i = 0; i < grapheneLayers.Length; i++)
+            if (monitor.trLocation == null)
             {
-                //(Amc[i], Gamma[i]) = GrapheneConductivity.intraband_conductivity(grapheneLayers[i].temperature, grapheneLayers[i].gamma * 1e-3, grapheneLayers[i].mc);
-                Console.WriteLine(gr_cells[i]);
-                if (grapheneLayers[i].orientation == "x")
-                {
-                    var constant_point = (int)Math.Round((grapheneLayers[i].startPos[0] - limits[0, 0]) / (limits[0, 1] - limits[0, 0]) * (N - 1));
-                    var starting_point = (int)Math.Round((grapheneLayers[i].startPos[1] - limits[1, 0]) / (limits[1, 1] - limits[1, 0]) * (M - 1));
-                    for (int j = 0; j < gr_cells[i]; j++)
-                    {
-                        (yAmc[jj], yGamma[jj]) = GrapheneConductivity.intraband_conductivity(grapheneLayers[i].temperature, grapheneLayers[i].gamma * 1e-3, grapheneLayers[i].mc);
-                        yField_pos[0, jj] = constant_point;
-                        yField_pos[1, jj] = starting_point + j;
-                        jj++;
-                    }
-                    
-                }
-                else
-                {
-                    var starting_point = (int)Math.Round((grapheneLayers[i].startPos[0] - limits[0, 0]) / (limits[0, 1] - limits[0, 0]) * (N - 1));
-                    var constant_point = (int)Math.Round((grapheneLayers[i].startPos[1] - limits[1, 0]) / (limits[1, 1] - limits[1, 0]) * (M - 1));
-                    for (int j = 0; j < gr_cells[i]; j++)
-                    {
-                        (xAmc[ii], xGamma[ii]) = GrapheneConductivity.intraband_conductivity(grapheneLayers[i].temperature, grapheneLayers[i].gamma * 1e-3, grapheneLayers[i].mc);
-                        xField_pos[1, ii] = constant_point;
-                        xField_pos[0, ii] = starting_point + j;
-                        ii++;
-                    }
-
-                }
-
+                noTimeMonitors = 0;
             }
+            else
+            {
+                noTimeMonitors = monitor.trLocation.GetLength(1);
+                locTimeMonitors = new int[2, noTimeMonitors];
+                exTimeMonitors = new double[simLength, noTimeMonitors];
+                eyTimeMonitors = new double[simLength, noTimeMonitors];
+
+                for (int i = 0; i < noTimeMonitors; i++)
+                {
+                    locTimeMonitors[0, i] = (int)Math.Round((monitor.trLocation[0, i] - limits[0, 0]) / (limits[0, 1] - limits[0, 0]) * (N - 1));
+                    locTimeMonitors[1, i] = (int)Math.Round((monitor.trLocation[1, i] - limits[1, 0]) / (limits[1, 1] - limits[1, 0]) * (M - 1));
+                }
+            }
+
 
 
         }
@@ -249,7 +330,7 @@ namespace FDTD_app
         {
             double J;
 
-            for (int n = 1; n <= 3000; n++)
+            for (int n = 1; n < simLength; n++)
             {
 
                 J = Math.Exp(-Math.Pow((dt * (double)n - 3 * ta) / ta, 2)) * Math.Sin(2 * Math.PI * freq * (dt * n - 3 * ta));
@@ -392,7 +473,31 @@ namespace FDTD_app
                 }
 
 
+                // Monitors
+                for (int k = 0; k < noFrequencies; k++)
+                {
+                    for (int i = 0; i < N; i++)
+                    {
+                        for (int j = 0; j < M; j++)
+                        {
+                            efxReal[i, j, k] += Ex[i, j] * Math.Cos(constantTerm[k] * n);
+                            efxImag[i, j, k] += Ex[i, j] * Math.Sin(constantTerm[k] * n);
+                            efyReal[i, j, k] += Ey[i, j] * Math.Cos(constantTerm[k] * n);
+                            efyImag[i, j, k] += Ey[i, j] * Math.Sin(constantTerm[k] * n);
+                        }
+                    }
+                }
+
+                for (int i = 0; i < noTimeMonitors; i++)
+                {
+                    exTimeMonitors[n, i] = Ex[locTimeMonitors[0, i], locTimeMonitors[1, i]];
+                    eyTimeMonitors[n, i] = Ey[locTimeMonitors[0, i], locTimeMonitors[1, i]];
+                }
+
+
+
                 // Saving
+                /*
                 if (n%4==0)
                 {
                     using (TextWriter tw = new StreamWriter("C:\\Users\\OFADC\\Desktop\\fd\\sim_dat\\f" + n.ToString("D4") + ".txt"))
@@ -407,15 +512,12 @@ namespace FDTD_app
                         }
                     }
                 }
-                
+                */
+
 
             }
 
             Console.WriteLine("Simulation ended.");
-            
-
-
-
 
 
         }

@@ -31,6 +31,7 @@ namespace FDTD_app
         Materials.material[] mat;
         Source.sources[] source;
         GrapheneForm.grapheneProperties[] grapheneLayers;
+        Monitors.monitors monitor;
 
         private int matNo;
 
@@ -40,8 +41,10 @@ namespace FDTD_app
 
         private bool oks;
 
+        private string folderSave;
 
-        public struct domain { public double freq; public double bw; public int c2l; public double[] limits; };
+
+        public struct domain { public double freq; public double bw; public int c2l; public int noPulses;  public double[] limits; };
         
 
         public CoreForm()
@@ -368,12 +371,13 @@ namespace FDTD_app
 
             var f1  = new OpenFileDialog();
             f1.Filter = "Txt files|*.txt";
-            //f1.FilterIndex = 1;
 
             if (f1.ShowDialog() == DialogResult.OK)
             {
                 var fileContent = string.Empty;
                 string sFileName = f1.FileName;
+
+                folderSave = System.IO.Path.GetDirectoryName(f1.FileName);
 
                 int[][] list = File.ReadAllLines(sFileName).Select(l => l.Split(',').Select(i => int.Parse(i)).ToArray()).ToArray();
 
@@ -456,6 +460,7 @@ namespace FDTD_app
             dm1.freq = double.Parse(frequencyText.Text) * 1e12;
             dm1.bw = double.Parse(bandwidthText.Text) * 1e12;
             dm1.c2l = int.Parse(c2lText.Text);
+            dm1.noPulses = int.Parse(noPulsesText.Text);
 
             dm1.limits = new double[2];
 
@@ -475,6 +480,7 @@ namespace FDTD_app
 
             NText.Text = fd.N.ToString();
             MText.Text = fd.M.ToString();
+            TText.Text = fd.simLength.ToString();
             dxText.Text = (fd.dx * 1e6).ToString("0.0000");
             dyText.Text = (fd.dy * 1e6).ToString("0.0000");
             dtText.Text = (fd.dt * 1e15).ToString("0.0000");
@@ -485,6 +491,8 @@ namespace FDTD_app
             fd.SourceDefinition(source, limits);
 
             fd.GrapheneDefinition(grapheneLayers, limits);
+
+            fd.MonitorDefinition(monitor, limits);
 
             oks = true;
 
@@ -552,7 +560,89 @@ namespace FDTD_app
 
         private void simButton_Click(object sender, EventArgs e)
         {
+
             fd.Simulation();
+
+            if (!(monitor.frequencies == null))
+            {
+                for (int k = 0; k < monitor.frequencies.Length; k++)
+                {
+                    using (TextWriter tw = new StreamWriter(folderSave + "\\Ex_f=[" + (monitor.frequencies[k]).ToString() + "].txt"))
+                    {
+                        for (int i = 0; i < fd.N; i++)
+                        {
+                            for (int j = 0; j < fd.M; j++)
+                            {
+                                if (fd.efxImag[i, j, k] >= 0)
+                                {
+                                    tw.Write(fd.efxReal[i, j, k] + "+" + fd.efxImag[i, j, k] + "i ");
+                                }
+                                else
+                                {
+                                    tw.Write(fd.efxReal[i, j, k] + "" + fd.efxImag[i, j, k] + "i ");
+                                }
+
+                            }
+
+                            tw.WriteLine();
+                        }
+                    }
+
+                    using (TextWriter tw = new StreamWriter(folderSave + "\\Ey_f=[" + (monitor.frequencies[k]).ToString() + "].txt"))
+                    {
+                        for (int i = 0; i < fd.N; i++)
+                        {
+                            for (int j = 0; j < fd.M; j++)
+                            {
+                                if (fd.efyImag[i, j, k] >= 0)
+                                {
+                                    tw.Write(fd.efyReal[i, j, k] + "+" + fd.efyImag[i, j, k] + "i ");
+                                }
+                                else
+                                {
+                                    tw.Write(fd.efyReal[i, j, k] + "" + fd.efyImag[i, j, k] + "i ");
+                                }
+
+                            }
+
+                            tw.WriteLine();
+                        }
+                    }
+                }
+            }
+
+            if (!(monitor.trLocation == null))
+            {
+                using (TextWriter tw = new StreamWriter(folderSave + "\\Ex_transient.txt"))
+                {
+                    for (int i = 0; i < fd.exTimeMonitors.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < fd.exTimeMonitors.GetLength(1); j++)
+                        {
+                            tw.Write(fd.exTimeMonitors[i, j] + " ");
+                        }
+                        tw.WriteLine();
+                    }
+                }
+
+                using (TextWriter tw = new StreamWriter(folderSave + "\\Ey_transient.txt"))
+                {
+                    for (int i = 0; i < fd.eyTimeMonitors.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < fd.eyTimeMonitors.GetLength(1); j++)
+                        {
+                            tw.Write(fd.eyTimeMonitors[i, j] + " ");
+                        }
+                        tw.WriteLine();
+                    }
+                }
+
+            }
+
+            MessageBox.Show("The simulation has been completed successfully!", "Simulation completed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            simButton.Enabled = false;
+
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -591,6 +681,15 @@ namespace FDTD_app
             var s1 = new AboutBox();
 
             s1.ShowDialog();
+        }
+
+        private void monitorButton_Click(object sender, EventArgs e)
+        {
+            var s1 = new Monitors(monitor);
+
+            s1.ShowDialog();
+
+            monitor = s1.monitor;
         }
     }
 }

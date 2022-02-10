@@ -105,6 +105,12 @@
     <Compile Include="Materials.Designer.cs">
       <DependentUpon>Materials.cs</DependentUpon>
     </Compile>
+    <Compile Include="Monitors.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Monitors.Designer.cs">
+      <DependentUpon>Monitors.cs</DependentUpon>
+    </Compile>
     <Compile Include="PolynomialChaosModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -126,6 +132,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Materials.resx">
       <DependentUpon>Materials.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monitors.resx">
+      <DependentUpon>Monitors.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -62,14 +62,17 @@ namespace FDTD_app
             this.label6 = new System.Windows.Forms.Label();
             this.materialButton = new System.Windows.Forms.Button();
             this.grapheneButton = new System.Windows.Forms.Button();
-            this.aboutButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.monitorButton = new System.Windows.Forms.Button();
+            this.aboutButton = new System.Windows.Forms.Button();
+            this.pulseLabel = new System.Windows.Forms.Label();
+            this.noPulsesText = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // frequencyText
             // 
-            this.frequencyText.Location = new System.Drawing.Point(684, 46);
+            this.frequencyText.Location = new System.Drawing.Point(684, 20);
             this.frequencyText.Name = "frequencyText";
             this.frequencyText.Size = new System.Drawing.Size(74, 20);
             this.frequencyText.TabIndex = 2;
@@ -79,7 +82,7 @@ namespace FDTD_app
             // frequencyLabel
             // 
             this.frequencyLabel.AutoSize = true;
-            this.frequencyLabel.Location = new System.Drawing.Point(592, 49);
+            this.frequencyLabel.Location = new System.Drawing.Point(592, 23);
             this.frequencyLabel.Name = "frequencyLabel";
             this.frequencyLabel.Size = new System.Drawing.Size(86, 13);
             this.frequencyLabel.TabIndex = 3;
@@ -88,7 +91,7 @@ namespace FDTD_app
             // 
             // bandwidthText
             // 
-            this.bandwidthText.Location = new System.Drawing.Point(684, 72);
+            this.bandwidthText.Location = new System.Drawing.Point(684, 46);
             this.bandwidthText.Name = "bandwidthText";
             this.bandwidthText.Size = new System.Drawing.Size(74, 20);
             this.bandwidthText.TabIndex = 4;
@@ -97,7 +100,7 @@ namespace FDTD_app
             // bandwidthLabel
             // 
             this.bandwidthLabel.AutoSize = true;
-            this.bandwidthLabel.Location = new System.Drawing.Point(592, 75);
+            this.bandwidthLabel.Location = new System.Drawing.Point(592, 49);
             this.bandwidthLabel.Name = "bandwidthLabel";
             this.bandwidthLabel.Size = new System.Drawing.Size(86, 13);
             this.bandwidthLabel.TabIndex = 5;
@@ -106,7 +109,7 @@ namespace FDTD_app
             // 
             // c2lText
             // 
-            this.c2lText.Location = new System.Drawing.Point(684, 98);
+            this.c2lText.Location = new System.Drawing.Point(684, 72);
             this.c2lText.Name = "c2lText";
             this.c2lText.Size = new System.Drawing.Size(74, 20);
             this.c2lText.TabIndex = 6;
@@ -115,7 +118,7 @@ namespace FDTD_app
             // c2lLabel
             // 
             this.c2lLabel.AutoSize = true;
-            this.c2lLabel.Location = new System.Drawing.Point(590, 101);
+            this.c2lLabel.Location = new System.Drawing.Point(590, 75);
             this.c2lLabel.Name = "c2lLabel";
             this.c2lLabel.Size = new System.Drawing.Size(88, 13);
             this.c2lLabel.TabIndex = 7;
@@ -133,7 +136,7 @@ namespace FDTD_app
             // 
             // sourceButton
             // 
-            this.sourceButton.Location = new System.Drawing.Point(117, 95);
+            this.sourceButton.Location = new System.Drawing.Point(125, 95);
             this.sourceButton.Name = "sourceButton";
             this.sourceButton.Size = new System.Drawing.Size(75, 23);
             this.sourceButton.TabIndex = 9;
@@ -319,11 +322,11 @@ namespace FDTD_app
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(667, 353);
+            this.label5.Location = new System.Drawing.Point(685, 353);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(33, 13);
+            this.label5.Size = new System.Drawing.Size(14, 13);
             this.label5.TabIndex = 32;
-            this.label5.Text = "Tmax";
+            this.label5.Text = "T";
             // 
             // TText
             // 
@@ -354,7 +357,7 @@ namespace FDTD_app
             // 
             // materialButton
             // 
-            this.materialButton.Location = new System.Drawing.Point(104, 232);
+            this.materialButton.Location = new System.Drawing.Point(114, 141);
             this.materialButton.Name = "materialButton";
             this.materialButton.Size = new System.Drawing.Size(100, 23);
             this.materialButton.TabIndex = 33;
@@ -364,25 +367,13 @@ namespace FDTD_app
             // 
             // grapheneButton
             // 
-            this.grapheneButton.Location = new System.Drawing.Point(92, 343);
+            this.grapheneButton.Location = new System.Drawing.Point(104, 191);
             this.grapheneButton.Name = "grapheneButton";
             this.grapheneButton.Size = new System.Drawing.Size(122, 23);
             this.grapheneButton.TabIndex = 34;
             this.grapheneButton.Text = "Graphene Layers";
             this.grapheneButton.UseVisualStyleBackColor = true;
             this.grapheneButton.Click += new System.EventHandler(this.grapheneButton_Click);
-            // 
-            // aboutButton
-            // 
-            this.aboutButton.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.aboutButton.Image = global::FDTD_app.Properties.Resources.about_icon;
-            this.aboutButton.Location = new System.Drawing.Point(12, 12);
-            this.aboutButton.Name = "aboutButton";
-            this.aboutButton.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.aboutButton.Size = new System.Drawing.Size(35, 35);
-            this.aboutButton.TabIndex = 35;
-            this.aboutButton.UseVisualStyleBackColor = true;
-            this.aboutButton.Click += new System.EventHandler(this.aboutButton_Click);
             // 
             // button1
             // 
@@ -402,11 +393,53 @@ namespace FDTD_app
             this.textBox1.TabIndex = 0;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
+            // monitorButton
+            // 
+            this.monitorButton.Location = new System.Drawing.Point(125, 246);
+            this.monitorButton.Name = "monitorButton";
+            this.monitorButton.Size = new System.Drawing.Size(75, 23);
+            this.monitorButton.TabIndex = 36;
+            this.monitorButton.Text = "Monitors";
+            this.monitorButton.UseVisualStyleBackColor = true;
+            this.monitorButton.Click += new System.EventHandler(this.monitorButton_Click);
+            // 
+            // aboutButton
+            // 
+            this.aboutButton.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.aboutButton.Image = global::FDTD_app.Properties.Resources.about_icon;
+            this.aboutButton.Location = new System.Drawing.Point(12, 12);
+            this.aboutButton.Name = "aboutButton";
+            this.aboutButton.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.aboutButton.Size = new System.Drawing.Size(35, 35);
+            this.aboutButton.TabIndex = 35;
+            this.aboutButton.UseVisualStyleBackColor = true;
+            this.aboutButton.Click += new System.EventHandler(this.aboutButton_Click);
+            // 
+            // pulseLabel
+            // 
+            this.pulseLabel.AutoSize = true;
+            this.pulseLabel.Location = new System.Drawing.Point(590, 100);
+            this.pulseLabel.Name = "pulseLabel";
+            this.pulseLabel.Size = new System.Drawing.Size(89, 13);
+            this.pulseLabel.TabIndex = 38;
+            this.pulseLabel.Text = "Number of pulses";
+            // 
+            // noPulsesText
+            // 
+            this.noPulsesText.Location = new System.Drawing.Point(684, 97);
+            this.noPulsesText.Name = "noPulsesText";
+            this.noPulsesText.Size = new System.Drawing.Size(74, 20);
+            this.noPulsesText.TabIndex = 37;
+            this.noPulsesText.Text = "5";
+            // 
             // CoreForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.pulseLabel);
+            this.Controls.Add(this.noPulsesText);
+            this.Controls.Add(this.monitorButton);
             this.Controls.Add(this.aboutButton);
             this.Controls.Add(this.grapheneButton);
             this.Controls.Add(this.materialButton);
@@ -488,6 +521,9 @@ namespace FDTD_app
         private System.Windows.Forms.Button aboutButton;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button monitorButton;
+        private System.Windows.Forms.Label pulseLabel;
+        private System.Windows.Forms.TextBox noPulsesText;
     }
 }
 
