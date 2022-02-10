@@ -31,7 +31,9 @@ namespace FDTD_app
 
         //Graphene
         private double[] Jgrx, Jgry;
-        private double Amc, Gamma;
+        private int xCells, yCells;
+        private int[,] xField_pos, yField_pos;
+        private double[] xAmc, xGamma, yAmc, yGamma;
 
 
         public double InitializeDomain(CoreForm.domain dm1)
@@ -174,11 +176,64 @@ namespace FDTD_app
             }
         }
 
-        public void GrapheneDefinition()
+        public void GrapheneDefinition(GrapheneForm.grapheneProperties[] grapheneLayers, double[,] limits)
         {
-            Jgrx = new double[M];
-            Amc = 2.3546e+10;
-            Gamma = 4.5578e+0;
+            xCells = 0;
+            yCells = 0;
+
+            var jj = 0;
+
+            int[] gr_cells = new int[grapheneLayers.Length];
+
+            for (int i = 0; i < grapheneLayers.Length; i++)
+            {
+                
+
+                if (grapheneLayers[i].orientation == "x")
+                {
+                    gr_cells[i] = (int)Math.Round(grapheneLayers[i].length * 1e-6 / dy);
+                    yCells = yCells + gr_cells[i];
+                }
+                else
+                {
+                    gr_cells[i] = (int)Math.Round(grapheneLayers[i].length * 1e-6 / dx);
+                    xCells = xCells + gr_cells[i];
+                }
+
+            }
+
+            Jgrx = new double[xCells]; xAmc = new double[xCells]; xGamma = new double[xCells]; xField_pos = new int[2, xCells];
+            Jgry = new double[yCells]; yAmc = new double[yCells]; yGamma = new double[yCells]; yField_pos = new int[2, yCells];
+
+            
+
+
+            for (int i = 0; i < grapheneLayers.Length; i++)
+            {
+                //(Amc[i], Gamma[i]) = GrapheneConductivity.intraband_conductivity(grapheneLayers[i].temperature, grapheneLayers[i].gamma * 1e-3, grapheneLayers[i].mc);
+                Console.WriteLine(gr_cells[i]);
+                if (grapheneLayers[i].orientation == "x")
+                {
+                    var constant_point = (int)Math.Round((grapheneLayers[i].startPos[0] - limits[0, 0]) / (limits[0, 1] - limits[0, 0]) * (N - 1));
+                    var starting_point = (int)Math.Round((grapheneLayers[i].startPos[1] - limits[1, 0]) / (limits[1, 1] - limits[1, 0]) * (M - 1));
+                    for (int j = 0; j < gr_cells[i]; j++)
+                    {
+                        (yAmc[jj], yGamma[jj]) = GrapheneConductivity.intraband_conductivity(grapheneLayers[i].temperature, grapheneLayers[i].gamma * 1e-3, grapheneLayers[i].mc);
+                        yField_pos[0, jj] = constant_point;
+                        yField_pos[1, jj] = starting_point + j;
+                        jj++;
+                    }
+                    
+                }
+                else
+                {
+                    xCells++;
+
+                }
+
+            }
+
+
         }
 
         public void Simulation()
@@ -235,9 +290,9 @@ namespace FDTD_app
                 }
 
 
-                for (int i = 0; i < M; i++)
+                for (int i = 0; i < yCells; i++)
                 {
-                    Jgry[i] = Jgry[i] * (1- Gamma * dt) / (1+ Gamma * dt) + Ey[N / 2, i] * Amc * dt / (1+ Gamma * dt);
+                    Jgry[i] = Jgry[i] * (1 - yGamma[i] * dt) / (1 + yGamma[i] * dt) + Ey[yField_pos[0, i], yField_pos[1, i]] * yAmc[i] * dt / (1 + yGamma[i] * dt);
                 }
 
 
@@ -298,9 +353,9 @@ namespace FDTD_app
                     }
                 }
 
-                for (int i = 0; i < M; i++)
+                for (int i = 0; i < yCells; i++)
                 {
-                    Ey[N / 2, i] =  Ey[N / 2, i] - dt / e0 / dx * Jgry[i];
+                    Ey[yField_pos[0, i], yField_pos[1, i]] =  Ey[yField_pos[0, i], yField_pos[1, i]] - dt / e0 / dx * Jgry[i];
                 }
 
                 // Sources

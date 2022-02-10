@@ -21,7 +21,7 @@ using Complex = System.Numerics.Complex;
 
 namespace FDTD_app
 {
-    public partial class GrapheneProperties
+    public partial class GrapheneConductivity
     {
         
 
@@ -57,6 +57,17 @@ namespace FDTD_app
 
             File.WriteAllLines("C:\\Users\\OFADC\\Desktop\\test.txt", cond.Select(f1 => f1.ToString()));
             return (cond, A, G);
+        }
+
+        static public (double, double) intraband_conductivity(double T, double G, double mc)
+        {
+
+            G = G / Hz2eV * 2 * Math.PI;
+            mc *= qe;
+
+            var A = qe * qe * kb * T * (mc / (kb * T) + 2 * Math.Log(Math.Exp(-mc / (kb * T)) + 1)) / (Math.PI * rh * rh);
+
+            return (A, G);
         }
     }
 }

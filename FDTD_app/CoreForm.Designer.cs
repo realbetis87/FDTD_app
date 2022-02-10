@@ -29,8 +29,6 @@ namespace FDTD_app
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.frequencyText = new System.Windows.Forms.TextBox();
             this.frequencyLabel = new System.Windows.Forms.Label();
             this.bandwidthText = new System.Windows.Forms.TextBox();
@@ -64,25 +62,10 @@ namespace FDTD_app
             this.label6 = new System.Windows.Forms.Label();
             this.materialButton = new System.Windows.Forms.Button();
             this.grapheneButton = new System.Windows.Forms.Button();
+            this.aboutButton = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(300, 191);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(174, 20);
-            this.textBox1.TabIndex = 0;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(333, 250);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(109, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Load Voxel Model";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_click);
             // 
             // frequencyText
             // 
@@ -381,18 +364,50 @@ namespace FDTD_app
             // 
             // grapheneButton
             // 
-            this.grapheneButton.Location = new System.Drawing.Point(333, 75);
+            this.grapheneButton.Location = new System.Drawing.Point(92, 343);
             this.grapheneButton.Name = "grapheneButton";
             this.grapheneButton.Size = new System.Drawing.Size(122, 23);
             this.grapheneButton.TabIndex = 34;
             this.grapheneButton.Text = "Graphene Layers";
             this.grapheneButton.UseVisualStyleBackColor = true;
+            this.grapheneButton.Click += new System.EventHandler(this.grapheneButton_Click);
+            // 
+            // aboutButton
+            // 
+            this.aboutButton.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.aboutButton.Image = global::FDTD_app.Properties.Resources.about_icon;
+            this.aboutButton.Location = new System.Drawing.Point(12, 12);
+            this.aboutButton.Name = "aboutButton";
+            this.aboutButton.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.aboutButton.Size = new System.Drawing.Size(35, 35);
+            this.aboutButton.TabIndex = 35;
+            this.aboutButton.UseVisualStyleBackColor = true;
+            this.aboutButton.Click += new System.EventHandler(this.aboutButton_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(333, 250);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(109, 23);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "Load Voxel Model";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(300, 191);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(174, 20);
+            this.textBox1.TabIndex = 0;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // CoreForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.aboutButton);
             this.Controls.Add(this.grapheneButton);
             this.Controls.Add(this.materialButton);
             this.Controls.Add(this.label5);
@@ -437,9 +452,6 @@ namespace FDTD_app
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox frequencyText;
         private System.Windows.Forms.Label frequencyLabel;
         private System.Windows.Forms.TextBox bandwidthText;
@@ -473,6 +485,9 @@ namespace FDTD_app
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button materialButton;
         private System.Windows.Forms.Button grapheneButton;
+        private System.Windows.Forms.Button aboutButton;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

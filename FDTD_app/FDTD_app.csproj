@@ -80,12 +80,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="GrapheneConductivity.cs" />
     <Compile Include="CoreForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CoreForm.Designer.cs">
       <DependentUpon>CoreForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GrapheneForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GrapheneForm.Designer.cs">
+      <DependentUpon>GrapheneForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Materials.cs">
       <SubType>Form</SubType>
@@ -103,8 +115,14 @@
       <DependentUpon>Source.cs</DependentUpon>
     </Compile>
     <Compile Include="TEmode2DModule.cs" />
+    <EmbeddedResource Include="AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CoreForm.resx">
       <DependentUpon>CoreForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GrapheneForm.resx">
+      <DependentUpon>GrapheneForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Materials.resx">
       <DependentUpon>Materials.cs</DependentUpon>
@@ -117,6 +135,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="Source.resx">
       <DependentUpon>Source.cs</DependentUpon>
@@ -137,6 +156,15 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="espa_en.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="espa_en.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="about_icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

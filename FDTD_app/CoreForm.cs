@@ -30,6 +30,8 @@ namespace FDTD_app
 
         Materials.material[] mat;
         Source.sources[] source;
+        GrapheneForm.grapheneProperties[] grapheneLayers;
+
         private int matNo;
 
         private int[,] voxel_matrix;
@@ -174,7 +176,7 @@ namespace FDTD_app
 
             for (int i = 0; i < x3.Length; i++)
             {
-                var (c, A0, G0) = GrapheneProperties.intraband_conductivity(300, 0.11e-3, x3[i], f);
+                var (c, A0, G0) = GrapheneConductivity.intraband_conductivity(300, 0.11e-3, x3[i], f);
                 cond[i] = c[100];
             }
 
@@ -482,6 +484,8 @@ namespace FDTD_app
             fd.InitializeComponents();
             fd.SourceDefinition(source, limits);
 
+            fd.GrapheneDefinition(grapheneLayers, limits);
+
             oks = true;
 
             if (oks)
@@ -571,6 +575,22 @@ namespace FDTD_app
 
             mat = s1.mat;
             
+        }
+
+        private void grapheneButton_Click(object sender, EventArgs e)
+        {
+            var s1 = new GrapheneForm(grapheneLayers);
+
+            s1.ShowDialog();
+
+            grapheneLayers = s1.grapheneLayers;
+        }
+
+        private void aboutButton_Click(object sender, EventArgs e)
+        {
+            var s1 = new AboutBox();
+
+            s1.ShowDialog();
         }
     }
 }
