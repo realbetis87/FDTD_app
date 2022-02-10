@@ -181,6 +181,7 @@ namespace FDTD_app
             xCells = 0;
             yCells = 0;
 
+            var ii = 0;
             var jj = 0;
 
             int[] gr_cells = new int[grapheneLayers.Length];
@@ -227,7 +228,15 @@ namespace FDTD_app
                 }
                 else
                 {
-                    xCells++;
+                    var starting_point = (int)Math.Round((grapheneLayers[i].startPos[0] - limits[0, 0]) / (limits[0, 1] - limits[0, 0]) * (N - 1));
+                    var constant_point = (int)Math.Round((grapheneLayers[i].startPos[1] - limits[1, 0]) / (limits[1, 1] - limits[1, 0]) * (M - 1));
+                    for (int j = 0; j < gr_cells[i]; j++)
+                    {
+                        (xAmc[ii], xGamma[ii]) = GrapheneConductivity.intraband_conductivity(grapheneLayers[i].temperature, grapheneLayers[i].gamma * 1e-3, grapheneLayers[i].mc);
+                        xField_pos[1, ii] = constant_point;
+                        xField_pos[0, ii] = starting_point + j;
+                        ii++;
+                    }
 
                 }
 
@@ -295,6 +304,11 @@ namespace FDTD_app
                     Jgry[i] = Jgry[i] * (1 - yGamma[i] * dt) / (1 + yGamma[i] * dt) + Ey[yField_pos[0, i], yField_pos[1, i]] * yAmc[i] * dt / (1 + yGamma[i] * dt);
                 }
 
+                for (int i = 0; i < xCells; i++)
+                {
+                    Jgrx[i] = Jgrx[i] * (1 - xGamma[i] * dt) / (1 + xGamma[i] * dt) + Ex[xField_pos[0, i], xField_pos[1, i]] * xAmc[i] * dt / (1 + xGamma[i] * dt);
+                }
+
 
 
 
@@ -357,6 +371,14 @@ namespace FDTD_app
                 {
                     Ey[yField_pos[0, i], yField_pos[1, i]] =  Ey[yField_pos[0, i], yField_pos[1, i]] - dt / e0 / dx * Jgry[i];
                 }
+
+                for (int i = 0; i < xCells; i++)
+                {
+                    Ex[xField_pos[0, i], xField_pos[1, i]] = Ex[xField_pos[0, i], xField_pos[1, i]] - dt / e0 / dx * Jgrx[i];
+                }
+
+
+
 
                 // Sources
                 for (int i = 0; i < sourcesEx; i++)
