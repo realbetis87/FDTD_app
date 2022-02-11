@@ -51,8 +51,6 @@ namespace FDTD_app
         {
             InitializeComponent();
 
-            textBox1.Text = "test";
-
             //Complex[] t1 = new Complex[6];
             //var t2 = new int[6];
             //var t3 = new int[4];
@@ -84,7 +82,8 @@ namespace FDTD_app
 
 
             var matrix = new SparseMatrix(n, n, nnz);
-            var A = new SparseMatrix(n, n, nnz);
+            //var A = new SparseMatrix(n, n, nnz);
+            var A = SparseMatrix.CreateIdentity(n);
 
             var ax = matrix.Values;
             var ai = matrix.RowIndices;
@@ -237,7 +236,7 @@ namespace FDTD_app
         }
 
 
-        public static SparseMatrix vstack(SparseMatrix uMatrix, SparseMatrix bMatrix)
+        public static SparseMatrix vstack(CompressedColumnStorage<System.Numerics.Complex> uMatrix, CompressedColumnStorage<System.Numerics.Complex> bMatrix)
         {
             if (uMatrix.ColumnCount == bMatrix.ColumnCount)
             {
@@ -295,7 +294,7 @@ namespace FDTD_app
         }
 
 
-        public static SparseMatrix hstack(SparseMatrix lMatrix, SparseMatrix rMatrix)
+        public static SparseMatrix hstack(CompressedColumnStorage<System.Numerics.Complex> lMatrix, CompressedColumnStorage<System.Numerics.Complex> rMatrix)
         {
             if (lMatrix.RowCount == rMatrix.RowCount)
             {
@@ -667,13 +666,284 @@ namespace FDTD_app
             
         }
 
+        private SparseMatrix speye(SparseMatrix A)
+        {
+            var N = A.RowCount;
+
+            var ax = A.Values;
+            var ai = A.RowIndices;
+            var ap = A.ColumnPointers;
+
+            ap[0] = 0;
+
+            for (int i = 0; i < N; i++)
+            {
+                ax[i] = 1;
+                ai[i] = i;
+                ap[i + 1] = i + 1;
+            }
+
+            return A;
+        }
+
+        private SparseMatrix spdiag(SparseMatrix A)
+        {
+            var N = A.RowCount;
+
+            var ax = A.Values;
+            var ai = A.RowIndices;
+            var ap = A.ColumnPointers;
+
+            ap[0] = 0;
+
+            for (int i = 0; i < N; i++)
+            {
+                ax[i] = 0;
+                ai[i] = i;
+                ap[i + 1] = i + 1;
+            }
+
+            return A;
+        }
+
+        private SparseMatrix spdiag(SparseMatrix A, double value)
+        {
+            var N = A.RowCount;
+
+            var ax = A.Values;
+            var ai = A.RowIndices;
+            var ap = A.ColumnPointers;
+
+            ap[0] = 0;
+
+            for (int i = 0; i < N; i++)
+            {
+                ax[i] = value;
+                ai[i] = i;
+                ap[i + 1] = i + 1;
+            }
+
+            return A;
+        }
+
+        private SparseMatrix spdiag(SparseMatrix A, Complex value)
+        {
+            var N = A.RowCount;
+
+            var ax = A.Values;
+            var ai = A.RowIndices;
+            var ap = A.ColumnPointers;
+
+            ap[0] = 0;
+
+            for (int i = 0; i < N; i++)
+            {
+                ax[i] = value;
+                ai[i] = i;
+                ap[i + 1] = i + 1;
+            }
+
+            return A;
+        }
+
+        private SparseMatrix MultiplyConstant(SparseMatrix A, Complex value)
+        {
+            for (int i = 0; i < A.Values.Length; i++)
+            {
+                A.Values[i] = A.Values[i] * value;
+            }
+
+            return A;
+        }
+
         private void grapheneButton_Click(object sender, EventArgs e)
         {
+            var f = 2e12;
+
+            var e0 = 8.85418781762e-12;
+            var m0 = 4 * Math.PI * 1e-7;
+            var c0 = 1 / Math.Sqrt(e0 * m0);
+
+            var l0 = c0 / f;
+
+            var k0 = 2 * Math.PI * f / c0;
+
+            var d = l0 / 6;
+
+            var Lx = 200e-6;
+            var Ly = 150e-6;
+
+            int N = (int)Math.Round(Lx / d);
+            int M = (int)Math.Round(Ly / d);
+
+            d = Lx / N;
+
+            int[,] idm = new int[N, M];
+
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < M; j++)
+                {
+                    idm[i, j] = i + N * j;
+                }
+            }
+
+            var erx = speye(new SparseMatrix(N * M, N * M, N * M));
+            var ery = speye(new SparseMatrix(N * M, N * M, N * M));
+            var erz = speye(new SparseMatrix(N * M, N * M, N * M));
+            var ierz = speye(new SparseMatrix(N * M, N * M, N * M));
+
+            var erxz = spdiag(new SparseMatrix(N * M, N * M, N * M));
+            var erzx = spdiag(new SparseMatrix(N * M, N * M, N * M));
+
+            (Complex sd, Complex so) = GrapheneConductivity.anisotropic_conductivity(300, 0.11 * 1e-3, 0.2, 1, f);
+
+            var gr_w = 40e-6;
+            int gr_1 = (int)Math.Round((double)N / 2 - gr_w / d / 2) -1;
+            int gr_2 = (int)Math.Round((double)N / 2 + gr_w / d / 2) -1;
+
+            Console.WriteLine(gr_1 + " " + gr_2);
+
+            for (int i = gr_1; i < gr_2; i++)
+            {
+                int j = (int)Math.Round((double)M / 2) -1;
+
+                erx.Values[idm[i, j]] -= new Complex(0, 1) * (sd / 2 / Math.PI / f / e0) / d;
+                erz.Values[idm[i, j]] -= new Complex(0, 1) * (sd / 2 / Math.PI / f / e0) / d;
+
+                erxz.Values[idm[i, j]] -= new Complex(0, 1) * (so / 2 / Math.PI / f / e0) / d;
+                erzx.Values[idm[i, j]] += new Complex(0, 1) * (so / 2 / Math.PI / f / e0) / d;
+            }
+
+            erz.Values[idm[gr_2, (int)Math.Round((double)M / 2) - 1]] -= new Complex(0, 1) * (sd / 2 / Math.PI / f / e0) / d;
+            erzx.Values[idm[gr_2, (int)Math.Round((double)M / 2) - 1]] = new Complex(0, 1) * (so / 2 / Math.PI / f / e0) / d;
+
+            ierz = erz;
+
+            for (int i = 0; i < ierz.Values.Length; i++)
+            {
+                ierz.Values[i] = 1 / ierz.Values[i];
+            }
+
+
+            var Ux = new SparseMatrix(N * M, N * M, 2 * N * M);
+            
+            Ux.ColumnPointers[0] = 0;
+
+            int jj = 0;
+
+            for (int i=0; i < N * M; i++)
+            {
+                if ((i % N) != 0)
+                {
+                    Ux.Values[jj] = 1 / d;
+                    Ux.RowIndices[jj++] = i - 1;
+
+                    Ux.Values[jj] = -1 / d;
+                    Ux.RowIndices[jj++] = i;
+                }
+                Ux.ColumnPointers[i + 1] = jj;
+            }
+
+            var Vx = new SparseMatrix(N * M, N * M, 2 * N * M);
+            Ux.Transpose(Vx);
+
+            for (int i = 0; i < Vx.Values.Length; i++)
+            {
+                Vx.Values[i] = -Vx.Values[i];
+            }
+
+
+            var Uy = new SparseMatrix(N * M, N * M, 2 * N * M);
+
+            Uy.ColumnPointers[0] = 0;
+
+            jj = 0;
+
+            for (int i = 0; i < N * M; i++)
+            {
+                if (i >= N)
+                {
+                    Uy.Values[jj] = 1 / d;
+                    Uy.RowIndices[jj++] = i - N;
+
+                    Uy.Values[jj] = -1 / d;
+                    Uy.RowIndices[jj++] = i;
+                }
+                Uy.ColumnPointers[i + 1] = jj;
+            }
+
+            var Vy = new SparseMatrix(N * M, N * M, 2 * N * M);
+            Uy.Transpose(Vy);
+
+            for (int i = 0; i < Vy.Values.Length; i++)
+            {
+                Vy.Values[i] = -Vy.Values[i];
+            }
+
+            var A11 = new SparseMatrix(N * M, N * M, 2 * N * M); Ux.Multiply(ierz, A11); A11.Multiply(erzx,A11); A11 = MultiplyConstant(A11, new Complex(0, -1));
+            
+            //for (int i = 0; i < A11.Values.Length; i++)
+            //{
+            //    A11.Values[i] = A11.Values[i] * (new Complex(0, -1));
+            //}
+
+            var A = new SparseMatrix(20, 20, 20);
+
+            var ax = A.Values;
+            var ai = A.RowIndices;
+            var ap = A.ColumnPointers;
+
+            ap[0] = 0;
+
+            for (int i = 0; i < 20; i++)
+            {
+                ax[i] = 1;
+                ai[i] = i;
+                ap[i + 1] = i+1;
+            }
+
+            ax[14] = new Complex(3,2);
+
+            
+            using (TextWriter tw = new StreamWriter("C:\\Users\\OFADC\\Desktop\\test1.txt"))
+            {
+                for (int i = 0; i < Ux.RowCount; i++)
+                {
+                    for (int k = 0; k < Ux.ColumnCount; k++)
+                    {
+                        tw.Write(A11.At(i, k).Imaginary + " ");
+                    }
+                    tw.WriteLine();
+                }
+            }
+            
+
+            var dprob = new Arpack(A11) { ComputeEigenVectors = true };
+
+            // Finding eigenvalues and eigenvectors.
+            var result = dprob.SolveStandard(2, new Complex(10, 0.0));
+
+            Console.WriteLine(result.EigenValues[0]);
+
+
+
             var s1 = new GrapheneForm(grapheneLayers);
 
             s1.ShowDialog();
 
             grapheneLayers = s1.grapheneLayers;
+
+
+
+            //(Complex sd, Complex so) = GrapheneConductivity.anisotropic_conductivity(grapheneLayers[0].temperature, grapheneLayers[0].gamma * 1e-3, grapheneLayers[0].mc, grapheneLayers[0].b0, double.Parse(frequencyText.Text) * 1e12);
+
+
+            //Console.WriteLine(sd);
+            //Console.WriteLine(so);
+
+
+
         }
 
         private void aboutButton_Click(object sender, EventArgs e)

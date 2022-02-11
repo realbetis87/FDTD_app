@@ -30,7 +30,7 @@ namespace FDTD_app
         private static double h =6.626068e-34;
         private static double rh =h/2/Math.PI;
         private static double h0 =377;
-        private static double uf =9.5e5;
+        private static double uf =9.71e5;
 
         private static double Hz2eV =4.135667516e-15;
 
@@ -69,5 +69,44 @@ namespace FDTD_app
 
             return (A, G);
         }
+
+        static public (Complex, Complex) anisotropic_conductivity(double T, double G, double mc, double B0, double f)
+        {
+            G = G / Hz2eV * 2 * Math.PI;
+            mc *= qe;
+
+            Complex sd = new Complex(0, 0);
+            Complex so = new Complex(0, 0);
+
+            for (int n = 0; n < 10000001; n++)
+            {
+
+
+                var st1 = sd; var st2 = so;
+                var Mn = Math.Sqrt(2 * n * uf * uf * Math.Abs(qe * B0) * rh);
+                var Mn1 = Math.Sqrt(2 * (n + 1) * uf * uf * Math.Abs(qe * B0) * rh);
+                var fdp = 1 / (Math.Exp((Mn - mc) / kb / T) + 1);
+                var fdm = 1 / (Math.Exp((-Mn - mc) / kb / T) + 1);
+                var fdp1 = 1 / (Math.Exp((Mn1 - mc) / kb / T) + 1);
+                var fdm1 = 1 / (Math.Exp((-Mn1 - mc) / kb / T) + 1);
+
+
+                Complex omega_term = new Complex(2 * Math.PI * f, -2 * G);
+                Complex div_term = new Complex(0, Math.PI);
+
+                sd = sd - qe * qe * uf * uf * Math.Abs(qe * B0) * omega_term * rh / div_term * ((fdp - fdp1 + fdm1 - fdm) / ((Mn1 - Mn) * (Mn1 - Mn) - omega_term * omega_term * rh * rh) / (Mn1 - Mn) + (fdm - fdp1 + fdm1 - fdp) / ((Mn1 + Mn) * (Mn1 + Mn) - omega_term * omega_term * rh * rh) / (Mn1 + Mn));
+                so = so + qe * qe * uf * uf * qe * B0 / Math.PI * (fdp - fdp1 - fdm1 + fdm) * (1 / ((Mn1 - Mn) * (Mn1 - Mn) - omega_term * omega_term * rh * rh) + 1 / ((Mn1 + Mn) * (Mn1 + Mn) - omega_term * omega_term * rh * rh));
+
+                if (Math.Abs(st1.Real - sd.Real) / sd.Real < 1e-9 && Math.Abs(st1.Imaginary - sd.Imaginary) / sd.Imaginary < 1e-9 && Math.Abs(st2.Real - so.Real) / so.Real < 1e-9 && Math.Abs(st2.Imaginary - so.Imaginary) / so.Imaginary < 1e-9)
+                {
+                    break;
+                }
+            }
+
+
+            return (sd, so);
+        }
+
+
     }
 }
