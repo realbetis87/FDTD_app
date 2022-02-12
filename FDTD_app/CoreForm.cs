@@ -768,7 +768,7 @@ namespace FDTD_app
 
             var k0 = 2 * Math.PI * f / c0;
 
-            var d = l0 / 6;
+            var d = l0 / 50;
 
             var Lx = 200e-6;
             var Ly = 150e-6;
@@ -796,13 +796,14 @@ namespace FDTD_app
             var erxz = spdiag(new SparseMatrix(N * M, N * M, N * M));
             var erzx = spdiag(new SparseMatrix(N * M, N * M, N * M));
 
-            (Complex sd, Complex so) = GrapheneConductivity.anisotropic_conductivity(300, 0.11 * 1e-3, 0.2, 1, f);
+            (Complex sd, Complex so) = GrapheneConductivity.anisotropic_conductivity(300, 0.11 * 1e-3, 0.15, 0.1, f);
+
+            //sd = new Complex(0.000118683537234, -0.002206984192799);
+            //so = new Complex(-8.389584234112461e-04, - 9.174284779003783e-05);
 
             var gr_w = 40e-6;
             int gr_1 = (int)Math.Round((double)N / 2 - gr_w / d / 2) -1;
             int gr_2 = (int)Math.Round((double)N / 2 + gr_w / d / 2) -1;
-
-            Console.WriteLine(gr_1 + " " + gr_2);
 
             for (int i = gr_1; i < gr_2; i++)
             {
@@ -881,50 +882,75 @@ namespace FDTD_app
                 Vy.Values[i] = -Vy.Values[i];
             }
 
-            var A11 = new SparseMatrix(N * M, N * M, 2 * N * M); Ux.Multiply(ierz, A11); A11.Multiply(erzx,A11); A11 = MultiplyConstant(A11, new Complex(0, -1));
+            var Ain = new SparseMatrix(N * M, N * M, 3 * N * M);
+
+            Ain.Clear();
+            var A11 = new SparseMatrix(N * M, N * M, 3 * N * M); Ux.Multiply(ierz, Ain); Ain.Multiply(erzx,A11); A11 = MultiplyConstant(A11, new Complex(0, -1));
+            var A12 = spdiag(new SparseMatrix(N * M, N * M, N * M));
+            Ain.Clear();
+            var A13 = new SparseMatrix(N * M, N * M, 3 * N * M); Ux.Multiply(ierz, Ain); Ain.Multiply(Vy, A13); A13 = MultiplyConstant(A13, new Complex(-1/k0, 0));
+            Ain.Clear();
+            var A14 = new SparseMatrix(N * M, N * M, 3 * N * M); Ux.Multiply(ierz, Ain); Ain.Multiply(Vx, A14); A14.Add(new Complex(1 / k0, 0), new Complex(k0, 0), speye(new SparseMatrix(N * M, N * M, N * M)), A14);
+
+            Ain.Clear();
+            var A21 = new SparseMatrix(N * M, N * M, 3 * N * M); Uy.Multiply(ierz, Ain); Ain.Multiply(erzx, A21); A21 = MultiplyConstant(A21, new Complex(0, -1));
+            var A22 = spdiag(new SparseMatrix(N * M, N * M, N * M));
+            Ain.Clear();
+            var A23 = new SparseMatrix(N * M, N * M, 3 * N * M); Uy.Multiply(ierz, Ain); Ain.Multiply(Vy, A23); A23.Add(new Complex(-1 / k0, 0), new Complex(-k0, 0), speye(new SparseMatrix(N * M, N * M, N * M)), A23);
+            Ain.Clear();
+            var A24 = new SparseMatrix(N * M, N * M, 3 * N * M); Uy.Multiply(ierz, Ain); Ain.Multiply(Vx, A24); A24 = MultiplyConstant(A24, new Complex(1 / k0, 0));
+
+            var A31 = new SparseMatrix(N * M, N * M, 3 * N * M); Vx.Multiply(Uy, A31); A31 = MultiplyConstant(A31, new Complex(1 / k0, 0));
+            Ain.Clear();
+            var A32 = new SparseMatrix(N * M, N * M, 3 * N * M); Vx.Multiply(Ux, Ain); Ain.Add(new Complex(-1 / k0, 0), new Complex(-k0, 0), ery, A32);
+            var A33 = spdiag(new SparseMatrix(N * M, N * M, N * M));
+            var A34 = spdiag(new SparseMatrix(N * M, N * M, N * M));
+
+            Ain.Clear();
+            var A41 = new SparseMatrix(N * M, N * M, 3 * N * M); Vy.Multiply(Uy, Ain); Ain.Add(new Complex(1 / k0, 0), new Complex(k0, 0), erx, A41);
+            Ain.Clear(); erxz.Multiply(ierz, Ain); Ain.Multiply(erzx, Ain); A41.Add(new Complex(1, 0), new Complex(-k0, 0), Ain, A41);
+            var A42 = new SparseMatrix(N * M, N * M, 3 * N * M); Vy.Multiply(Ux, A42); A42 = MultiplyConstant(A42, new Complex(-1 / k0, 0));
+            Ain.Clear();
+            var A43 = new SparseMatrix(N * M, N * M, 3 * N * M); erxz.Multiply(ierz, Ain); Ain.Multiply(Vy, A43); A43 = MultiplyConstant(A43, new Complex(0, 1));
+            Ain.Clear();
+            var A44 = new SparseMatrix(N * M, N * M, 3 * N * M); erxz.Multiply(ierz, Ain); Ain.Multiply(Vx, A44); A44 = MultiplyConstant(A44, new Complex(0, -1));
+
+            var A = hstack(hstack(vstack(vstack(A11, A21), vstack(A31, A41)), vstack(vstack(A12, A22), vstack(A32, A42))), hstack(vstack(vstack(A13, A23), vstack(A33, A43)), vstack(vstack(A14, A24), vstack(A34, A44))));
+            A = MultiplyConstant(A, new Complex(1 / k0, 0));
+
+            A.DropZeros();
+
+
+            Console.WriteLine("Matrix completed!");
             
-            //for (int i = 0; i < A11.Values.Length; i++)
-            //{
-            //    A11.Values[i] = A11.Values[i] * (new Complex(0, -1));
-            //}
+            var dprob = new Arpack(A) { ComputeEigenVectors = true };
 
-            var A = new SparseMatrix(20, 20, 20);
+            // Finding eigenvalues and eigenvectors.
+            var result = dprob.SolveStandard(3, new Complex(5, 0.0));
 
-            var ax = A.Values;
-            var ai = A.RowIndices;
-            var ap = A.ColumnPointers;
+            Console.WriteLine(result.EigenValues[0] + " " + result.EigenValues[1] + " " + result.EigenValues[2]);
 
-            ap[0] = 0;
 
-            for (int i = 0; i < 20; i++)
-            {
-                ax[i] = 1;
-                ai[i] = i;
-                ap[i + 1] = i+1;
-            }
-
-            ax[14] = new Complex(3,2);
-
-            
             using (TextWriter tw = new StreamWriter("C:\\Users\\OFADC\\Desktop\\test1.txt"))
             {
-                for (int i = 0; i < Ux.RowCount; i++)
+                for (int i = 0; i < result.EigenVectors.RowCount; i++)
                 {
-                    for (int k = 0; k < Ux.ColumnCount; k++)
+                    for (int k = 0; k < result.EigenVectors.ColumnCount; k++)
                     {
-                        tw.Write(A11.At(i, k).Imaginary + " ");
+                        if (result.EigenVectors.At(i, k).Imaginary >= 0)
+                        {
+                            tw.Write(result.EigenVectors.At(i, k).Real + "+" + result.EigenVectors.At(i, k).Imaginary + "i ");
+                        }
+                        else
+                        {
+                            tw.Write(result.EigenVectors.At(i, k).Real + "" + result.EigenVectors.At(i, k).Imaginary + "i ");
+                        }
+
                     }
                     tw.WriteLine();
                 }
             }
-            
 
-            var dprob = new Arpack(A11) { ComputeEigenVectors = true };
-
-            // Finding eigenvalues and eigenvectors.
-            var result = dprob.SolveStandard(2, new Complex(10, 0.0));
-
-            Console.WriteLine(result.EigenValues[0]);
 
 
 
