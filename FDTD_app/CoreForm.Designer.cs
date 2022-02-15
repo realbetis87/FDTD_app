@@ -63,11 +63,22 @@ namespace FDTD_app
             this.materialButton = new System.Windows.Forms.Button();
             this.grapheneButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.modeNo = new System.Windows.Forms.TextBox();
             this.monitorButton = new System.Windows.Forms.Button();
             this.aboutButton = new System.Windows.Forms.Button();
             this.pulseLabel = new System.Windows.Forms.Label();
             this.noPulsesText = new System.Windows.Forms.TextBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.effID = new System.Windows.Forms.TextBox();
+            this.modalButton = new System.Windows.Forms.Button();
+            this.checkButton = new System.Windows.Forms.Button();
+            this.dofText = new System.Windows.Forms.TextBox();
+            this.deltaText = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // frequencyText
@@ -357,7 +368,7 @@ namespace FDTD_app
             // 
             // materialButton
             // 
-            this.materialButton.Location = new System.Drawing.Point(114, 141);
+            this.materialButton.Location = new System.Drawing.Point(11, 67);
             this.materialButton.Name = "materialButton";
             this.materialButton.Size = new System.Drawing.Size(100, 23);
             this.materialButton.TabIndex = 33;
@@ -367,7 +378,7 @@ namespace FDTD_app
             // 
             // grapheneButton
             // 
-            this.grapheneButton.Location = new System.Drawing.Point(104, 191);
+            this.grapheneButton.Location = new System.Drawing.Point(11, 108);
             this.grapheneButton.Name = "grapheneButton";
             this.grapheneButton.Size = new System.Drawing.Size(122, 23);
             this.grapheneButton.TabIndex = 34;
@@ -377,7 +388,7 @@ namespace FDTD_app
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(333, 250);
+            this.button1.Location = new System.Drawing.Point(11, 29);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(109, 23);
             this.button1.TabIndex = 1;
@@ -385,17 +396,18 @@ namespace FDTD_app
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_click);
             // 
-            // textBox1
+            // modeNo
             // 
-            this.textBox1.Location = new System.Drawing.Point(300, 191);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(174, 20);
-            this.textBox1.TabIndex = 0;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.modeNo.Location = new System.Drawing.Point(424, 319);
+            this.modeNo.Name = "modeNo";
+            this.modeNo.Size = new System.Drawing.Size(71, 20);
+            this.modeNo.TabIndex = 0;
+            this.modeNo.Text = "3";
+            this.modeNo.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // monitorButton
             // 
-            this.monitorButton.Location = new System.Drawing.Point(125, 246);
+            this.monitorButton.Location = new System.Drawing.Point(125, 136);
             this.monitorButton.Name = "monitorButton";
             this.monitorButton.Size = new System.Drawing.Size(75, 23);
             this.monitorButton.TabIndex = 36;
@@ -432,17 +444,121 @@ namespace FDTD_app
             this.noPulsesText.TabIndex = 37;
             this.noPulsesText.Text = "5";
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.materialButton);
+            this.groupBox1.Controls.Add(this.grapheneButton);
+            this.groupBox1.Location = new System.Drawing.Point(72, 216);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(195, 137);
+            this.groupBox1.TabIndex = 39;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Medium Definition";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(328, 322);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(90, 13);
+            this.label7.TabIndex = 40;
+            this.label7.Text = "Number of modes";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(328, 352);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(77, 13);
+            this.label8.TabIndex = 42;
+            this.label8.Text = "Search around";
+            this.label8.Click += new System.EventHandler(this.label8_Click);
+            // 
+            // effID
+            // 
+            this.effID.Location = new System.Drawing.Point(424, 349);
+            this.effID.Name = "effID";
+            this.effID.Size = new System.Drawing.Size(71, 20);
+            this.effID.TabIndex = 41;
+            this.effID.Text = "5";
+            // 
+            // modalButton
+            // 
+            this.modalButton.Enabled = false;
+            this.modalButton.Location = new System.Drawing.Point(360, 384);
+            this.modalButton.Name = "modalButton";
+            this.modalButton.Size = new System.Drawing.Size(95, 27);
+            this.modalButton.TabIndex = 43;
+            this.modalButton.Text = "Mode Analysis";
+            this.modalButton.UseVisualStyleBackColor = true;
+            this.modalButton.Click += new System.EventHandler(this.modalButton_Click);
+            // 
+            // checkButton
+            // 
+            this.checkButton.Location = new System.Drawing.Point(376, 224);
+            this.checkButton.Name = "checkButton";
+            this.checkButton.Size = new System.Drawing.Size(79, 27);
+            this.checkButton.TabIndex = 44;
+            this.checkButton.Text = "Initial Check";
+            this.checkButton.UseVisualStyleBackColor = true;
+            this.checkButton.Click += new System.EventHandler(this.checkButton_Click);
+            // 
+            // dofText
+            // 
+            this.dofText.Location = new System.Drawing.Point(433, 283);
+            this.dofText.Name = "dofText";
+            this.dofText.ReadOnly = true;
+            this.dofText.Size = new System.Drawing.Size(65, 20);
+            this.dofText.TabIndex = 48;
+            this.dofText.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // deltaText
+            // 
+            this.deltaText.Location = new System.Drawing.Point(331, 283);
+            this.deltaText.Name = "deltaText";
+            this.deltaText.ReadOnly = true;
+            this.deltaText.Size = new System.Drawing.Size(65, 20);
+            this.deltaText.TabIndex = 47;
+            this.deltaText.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(437, 267);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(58, 13);
+            this.label9.TabIndex = 46;
+            this.label9.Text = "Unknowns";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(332, 267);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(68, 13);
+            this.label10.TabIndex = 45;
+            this.label10.Text = "Cell size [um]";
+            // 
             // CoreForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.dofText);
+            this.Controls.Add(this.deltaText);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.checkButton);
+            this.Controls.Add(this.modalButton);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.effID);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.pulseLabel);
             this.Controls.Add(this.noPulsesText);
             this.Controls.Add(this.monitorButton);
             this.Controls.Add(this.aboutButton);
-            this.Controls.Add(this.grapheneButton);
-            this.Controls.Add(this.materialButton);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.TText);
             this.Controls.Add(this.dtText);
@@ -474,11 +590,11 @@ namespace FDTD_app
             this.Controls.Add(this.bandwidthText);
             this.Controls.Add(this.frequencyLabel);
             this.Controls.Add(this.frequencyText);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.modeNo);
             this.Name = "CoreForm";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -520,10 +636,20 @@ namespace FDTD_app
         private System.Windows.Forms.Button grapheneButton;
         private System.Windows.Forms.Button aboutButton;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox modeNo;
         private System.Windows.Forms.Button monitorButton;
         private System.Windows.Forms.Label pulseLabel;
         private System.Windows.Forms.TextBox noPulsesText;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox effID;
+        private System.Windows.Forms.Button modalButton;
+        private System.Windows.Forms.Button checkButton;
+        private System.Windows.Forms.TextBox dofText;
+        private System.Windows.Forms.TextBox deltaText;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
     }
 }
 

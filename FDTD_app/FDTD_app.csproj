@@ -105,6 +105,7 @@
     <Compile Include="Materials.Designer.cs">
       <DependentUpon>Materials.cs</DependentUpon>
     </Compile>
+    <Compile Include="ModalSolverModule.cs" />
     <Compile Include="Monitors.cs">
       <SubType>Form</SubType>
     </Compile>
