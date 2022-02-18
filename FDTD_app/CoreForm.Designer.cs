@@ -86,6 +86,18 @@ namespace FDTD_app
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.aboutButton = new System.Windows.Forms.Button();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.lowerLimitText = new System.Windows.Forms.TextBox();
+            this.upperLimitText = new System.Windows.Forms.TextBox();
+            this.polyOrderText = new System.Windows.Forms.TextBox();
+            this.quadOrderText = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.pointsButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -94,6 +106,7 @@ namespace FDTD_app
             this.tableLayoutPanel3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // frequencyText
@@ -628,7 +641,7 @@ namespace FDTD_app
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.tableLayoutPanel2);
-            this.groupBox2.Location = new System.Drawing.Point(447, 12);
+            this.groupBox2.Location = new System.Drawing.Point(391, 12);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(212, 221);
             this.groupBox2.TabIndex = 49;
@@ -677,9 +690,9 @@ namespace FDTD_app
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.tableLayoutPanel3);
-            this.groupBox3.Location = new System.Drawing.Point(447, 252);
+            this.groupBox3.Location = new System.Drawing.Point(391, 252);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(212, 249);
+            this.groupBox3.Size = new System.Drawing.Size(212, 235);
             this.groupBox3.TabIndex = 50;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Modal Solver";
@@ -786,11 +799,128 @@ namespace FDTD_app
             this.aboutButton.UseVisualStyleBackColor = true;
             this.aboutButton.Click += new System.EventHandler(this.aboutButton_Click);
             // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.pointsButton);
+            this.groupBox5.Controls.Add(this.label16);
+            this.groupBox5.Controls.Add(this.label15);
+            this.groupBox5.Controls.Add(this.label14);
+            this.groupBox5.Controls.Add(this.label13);
+            this.groupBox5.Controls.Add(this.label12);
+            this.groupBox5.Controls.Add(this.label11);
+            this.groupBox5.Controls.Add(this.quadOrderText);
+            this.groupBox5.Controls.Add(this.polyOrderText);
+            this.groupBox5.Controls.Add(this.upperLimitText);
+            this.groupBox5.Controls.Add(this.lowerLimitText);
+            this.groupBox5.Location = new System.Drawing.Point(634, 152);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(253, 199);
+            this.groupBox5.TabIndex = 52;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Polynomial Chaos Analysis";
+            // 
+            // lowerLimitText
+            // 
+            this.lowerLimitText.Location = new System.Drawing.Point(74, 46);
+            this.lowerLimitText.Name = "lowerLimitText";
+            this.lowerLimitText.Size = new System.Drawing.Size(59, 20);
+            this.lowerLimitText.TabIndex = 0;
+            this.lowerLimitText.Text = "0";
+            // 
+            // upperLimitText
+            // 
+            this.upperLimitText.Location = new System.Drawing.Point(148, 46);
+            this.upperLimitText.Name = "upperLimitText";
+            this.upperLimitText.Size = new System.Drawing.Size(59, 20);
+            this.upperLimitText.TabIndex = 1;
+            this.upperLimitText.Text = "0.5";
+            // 
+            // polyOrderText
+            // 
+            this.polyOrderText.Location = new System.Drawing.Point(74, 94);
+            this.polyOrderText.Name = "polyOrderText";
+            this.polyOrderText.Size = new System.Drawing.Size(59, 20);
+            this.polyOrderText.TabIndex = 2;
+            this.polyOrderText.Text = "8";
+            // 
+            // quadOrderText
+            // 
+            this.quadOrderText.Location = new System.Drawing.Point(148, 94);
+            this.quadOrderText.Name = "quadOrderText";
+            this.quadOrderText.Size = new System.Drawing.Size(59, 20);
+            this.quadOrderText.TabIndex = 3;
+            this.quadOrderText.Text = "12";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(77, 28);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(36, 13);
+            this.label11.TabIndex = 4;
+            this.label11.Text = "Lower";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(157, 30);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(36, 13);
+            this.label12.TabIndex = 5;
+            this.label12.Text = "Upper";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(76, 78);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(57, 13);
+            this.label13.TabIndex = 6;
+            this.label13.Text = "Polynomial";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(147, 77);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(60, 13);
+            this.label14.TabIndex = 7;
+            this.label14.Text = "Quadrature";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(35, 49);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(33, 13);
+            this.label15.TabIndex = 8;
+            this.label15.Text = "Limits";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(35, 97);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(33, 13);
+            this.label16.TabIndex = 9;
+            this.label16.Text = "Order";
+            // 
+            // pointsButton
+            // 
+            this.pointsButton.Location = new System.Drawing.Point(93, 124);
+            this.pointsButton.Name = "pointsButton";
+            this.pointsButton.Size = new System.Drawing.Size(100, 23);
+            this.pointsButton.TabIndex = 10;
+            this.pointsButton.Text = "Evaluation Points";
+            this.pointsButton.UseVisualStyleBackColor = true;
+            this.pointsButton.Click += new System.EventHandler(this.pointsButton_Click);
+            // 
             // CoreForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(748, 522);
+            this.ClientSize = new System.Drawing.Size(930, 522);
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -810,6 +940,8 @@ namespace FDTD_app
             this.groupBox4.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -872,6 +1004,18 @@ namespace FDTD_app
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.Button indexButton;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox quadOrderText;
+        private System.Windows.Forms.TextBox polyOrderText;
+        private System.Windows.Forms.TextBox upperLimitText;
+        private System.Windows.Forms.TextBox lowerLimitText;
+        private System.Windows.Forms.Button pointsButton;
     }
 }
 

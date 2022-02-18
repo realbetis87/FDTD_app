@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Text.RegularExpressions;
+using System.Globalization;
 
 
 using CSparse.Complex;
@@ -60,28 +62,38 @@ namespace FDTD_app
 
             //GaussLegendreRule rule = new GaussLegendreRule(0.0, 10.0, 5);
 
-            var xx1 = new PolynomialChaos(0.0, 0.5, 8, 101);
+            var xx1 = new PolynomialChaos(0.0, 0.5, 8, 21);
 
             var x3 = xx1.Abscissas;
 
 
-            var f = linspace(1e10,1e12,101);
+            var f = linspace(1e10,1e12,21);
 
             //var (c, A0, G0) = GrapheneProperties.intraband_conductivity(300, 0.33e-3, 0.1, f);
 
             var cond = new Complex[x3.Length];
+            Complex[] x4 = new Complex[f.Length];
+            Complex[] x5 = new Complex[f.Length];
 
 
-            for (int i = 0; i < x3.Length; i++)
+            for (int ff = 0; ff < f.Length; ff++)
             {
-                var (c, A0, G0) = GrapheneConductivity.intraband_conductivity(300, 0.11e-3, x3[i], f);
-                cond[i] = c[100];
+                for (int i = 0; i < x3.Length; i++)
+                {
+                    var (c, A0, G0) = GrapheneConductivity.intraband_conductivity(300, 0.11e-3, x3[i], f);
+                    cond[i] = c[ff];
+                }
+
+                (x4[ff], x5[ff]) = xx1.Statistics(cond);
+
+                Console.WriteLine(x5[ff].Real + "" + x5[ff].Imaginary + "i");
             }
 
-            var (x4,x5) = xx1.Statistics(cond);
 
-            Console.WriteLine(x4);
-            Console.WriteLine(x5);
+
+            //var (x4,x5) = xx1.Statistics(cond);
+
+
 
 
 
@@ -543,6 +555,105 @@ namespace FDTD_app
                 Console.WriteLine(effectiveIndex[i] + " ");
             }
             */
+
+
+        }
+
+        private void pointsButton_Click(object sender, EventArgs e)
+        {
+            if (int.Parse(polyOrderText.Text)> int.Parse(quadOrderText.Text))
+            {
+                MessageBox.Show("The quadrature order is less than the polynomial one. Minimum quadrature order is used instead.", "Quadrature order is too low!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                quadOrderText.Text = polyOrderText.Text;
+            }
+
+            var xx1 = new PolynomialChaos(double.Parse(lowerLimitText.Text), double.Parse(upperLimitText.Text), int.Parse(polyOrderText.Text), int.Parse(quadOrderText.Text));
+
+            var x3 = xx1.Abscissas;
+
+            var p1 = new EvaluationPoints(xx1.Abscissas);
+
+            p1.ShowDialog();
+
+            string regexPattern = @"([-+]?\d+\.?\d*|[-+]?\d*\.?\d+?[e E]+[-+]?\d*)" + @"([\+-])" + @"([-+]?\d+\.?\d*|[-+]?\d*\.?\d+?[e E]+[-+]?\d*)" + @"i" + @"\s*";
+            Regex regex = new Regex(regexPattern);
+
+
+            var f1 = new OpenFileDialog();
+            f1.Filter = "Txt files|*.txt";
+
+            if (f1.ShowDialog() == DialogResult.OK)
+            {
+                var fileContent = string.Empty;
+                string sFileName = f1.FileName;
+
+                folderSave = System.IO.Path.GetDirectoryName(f1.FileName);
+
+                string[][] list = File.ReadAllLines(sFileName).Select(l => l.Split(' ')).ToArray().ToArray();
+
+                int rows = list.Length;
+                int cols = list.Max(subArray => subArray.Length);
+                if (!regex.IsMatch(list[0][cols-1]))
+                {
+                    cols -= 1;
+                }
+
+                Console.WriteLine(rows + " " + cols);
+
+                var mat2 = new Complex[rows, cols];
+                for (int i = 0; i < rows; i++)
+                {
+                    cols = list[i].Length;
+                    for (int jj = 0; jj < cols; jj++)
+                    {
+
+                        Match match = regex.Match(list[i][jj]);
+
+                        if (match.Success)
+                        {
+                            double img;
+                            double real = double.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+
+                            if (match.Groups[2].Value == "+")
+                            {
+                                img = double.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
+                            }
+                            else
+                            {
+                                img = -double.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
+                            }
+
+                            mat2[i, jj] = new Complex(real, img);
+                        }
+
+
+                    }
+                }
+
+                using (TextWriter tw = new StreamWriter(folderSave + "\\Ey_f=[test1].txt"))
+                {
+                    for (int i = 0; i < mat2.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < mat2.GetLength(1); j++)
+                        {
+                            if (mat2[i, j].Imaginary >= 0)
+                            {
+                                tw.Write(mat2[i, j].Real + "+" + mat2[i, j].Imaginary + "i ");
+                            }
+                            else
+                            {
+                                tw.Write(mat2[i, j].Real + "" + mat2[i, j].Imaginary + "i ");
+                            }
+
+                        }
+
+                        tw.WriteLine();
+                    }
+                }
+
+
+
+            }
 
 
         }
