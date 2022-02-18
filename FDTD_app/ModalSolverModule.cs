@@ -247,26 +247,6 @@ namespace FDTD_app
             var result = dprob.SolveStandard(modeNo, new Complex(eff, 0.0));
 
 
-            using (TextWriter tw = new StreamWriter("C:\\Users\\OFADC\\Desktop\\test1.txt"))
-            {
-                for (int i = 0; i < result.EigenVectors.RowCount; i++)
-                {
-                    for (int k = 0; k < result.EigenVectors.ColumnCount; k++)
-                    {
-                        if (result.EigenVectors.At(i, k).Imaginary >= 0)
-                        {
-                            tw.Write(result.EigenVectors.At(i, k).Real + "+" + result.EigenVectors.At(i, k).Imaginary + "i ");
-                        }
-                        else
-                        {
-                            tw.Write(result.EigenVectors.At(i, k).Real + "" + result.EigenVectors.At(i, k).Imaginary + "i ");
-                        }
-
-                    }
-                    tw.WriteLine();
-                }
-            }
-
             return (result.EigenValues, result.EigenVectors);
 
         }

@@ -476,14 +476,17 @@ namespace FDTD_app
                 // Monitors
                 for (int k = 0; k < noFrequencies; k++)
                 {
+                    var costerm = Math.Cos(constantTerm[k] * n);
+                    var sinterm = Math.Sin(constantTerm[k] * n);
+
                     for (int i = 0; i < N; i++)
                     {
                         for (int j = 0; j < M; j++)
                         {
-                            efxReal[i, j, k] += Ex[i, j] * Math.Cos(constantTerm[k] * n);
-                            efxImag[i, j, k] += Ex[i, j] * Math.Sin(constantTerm[k] * n);
-                            efyReal[i, j, k] += Ey[i, j] * Math.Cos(constantTerm[k] * n);
-                            efyImag[i, j, k] += Ey[i, j] * Math.Sin(constantTerm[k] * n);
+                            efxReal[i, j, k] += Ex[i, j] * costerm;
+                            efxImag[i, j, k] += Ex[i, j] * sinterm;
+                            efyReal[i, j, k] += Ey[i, j] * costerm;
+                            efyImag[i, j, k] += Ey[i, j] * sinterm;
                         }
                     }
                 }

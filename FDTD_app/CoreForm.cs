@@ -38,7 +38,7 @@ namespace FDTD_app
         private int[,] voxel_matrix;
 
         private TEmode2D fd;
-        private ModalSolverModule m1;
+        private ModalSolverModule m1; private Complex[] effectiveIndex; private CSparse.Matrix<Complex> eigenVectors;
 
         private bool oks;
 
@@ -480,33 +480,11 @@ namespace FDTD_app
         private void modalButton_Click(object sender, EventArgs e)
         {
                         
-            var (effectiveIndex, eigenVectors) = m1.ModeSolver(int.Parse(modeNo.Text), double.Parse(effID.Text));
+            (effectiveIndex, eigenVectors) = m1.ModeSolver(int.Parse(modeNo.Text), double.Parse(effID.Text));
 
-            for (int i = 0; i < effectiveIndex.Length; i++)
-            {
-                Console.WriteLine(effectiveIndex[i] + " ");
-            }
+            indexButton.Enabled = true;
 
-
-            using (TextWriter tw = new StreamWriter("C:\\Users\\OFADC\\Desktop\\test2.txt"))
-            {
-                for (int i = 0; i < eigenVectors.RowCount; i++)
-                {
-                    for (int k = 0; k < eigenVectors.ColumnCount; k++)
-                    {
-                        if (eigenVectors.At(i, k).Imaginary >= 0)
-                        {
-                            tw.Write(eigenVectors.At(i, k).Real + "+" + eigenVectors.At(i, k).Imaginary + "i ");
-                        }
-                        else
-                        {
-                            tw.Write(eigenVectors.At(i, k).Real + "" + eigenVectors.At(i, k).Imaginary + "i ");
-                        }
-
-                    }
-                    tw.WriteLine();
-                }
-            }
+            MessageBox.Show("The eigenvalue analysis has been completed successfully!", "Mode analysis completed", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         }
 
@@ -545,6 +523,27 @@ namespace FDTD_app
             m1.ConstructMatrix();
 
             modalButton.Enabled = true;
+
+        }
+
+        private void xaxisLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void indexButton_Click(object sender, EventArgs e)
+        {
+            var ef1 = new EffectiveIndex(effectiveIndex, eigenVectors, folderSave, new int[2] {m1.M, m1.N});
+
+            ef1.ShowDialog();
+
+            /*
+            for (int i = 0; i < effectiveIndex.Length; i++)
+            {
+                Console.WriteLine(effectiveIndex[i] + " ");
+            }
+            */
+
 
         }
     }

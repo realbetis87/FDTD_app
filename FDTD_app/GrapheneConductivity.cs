@@ -29,13 +29,15 @@ namespace FDTD_app
         private static double qe =1.60217646e-19;
         private static double h =6.626068e-34;
         private static double rh =h/2/Math.PI;
-        private static double h0 =377;
+        
         private static double uf =9.71e5;
 
         private static double Hz2eV =4.135667516e-15;
 
         private static double e0 =8.85418781762e-12;
         private static double m0 =4*Math.PI*1e-7;
+
+        public static double h0 = Math.Sqrt(m0/e0);
 
         static public (Complex[], double , double ) intraband_conductivity(double T, double G, double mc, double [] freq)
         {
