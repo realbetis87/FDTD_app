@@ -46,6 +46,7 @@ namespace FDTD_app
         private int noTimeMonitors;
         private int[,] locTimeMonitors;
         public double[,] exTimeMonitors, eyTimeMonitors;
+        public double[,] signalMonitor;
 
 
         public double InitializeDomain(CoreForm.domain dm1)
@@ -304,11 +305,8 @@ namespace FDTD_app
             efyReal = new double[N, M, noFrequencies];
             efyImag = new double[N, M, noFrequencies];
 
-            if (monitor.trLocation == null)
-            {
-                noTimeMonitors = 0;
-            }
-            else
+
+            if (!(monitor.trLocation == null | monitor.trLocation.GetLength(1)==0))
             {
                 noTimeMonitors = monitor.trLocation.GetLength(1);
                 locTimeMonitors = new int[2, noTimeMonitors];
@@ -321,8 +319,12 @@ namespace FDTD_app
                     locTimeMonitors[1, i] = (int)Math.Round((monitor.trLocation[1, i] - limits[1, 0]) / (limits[1, 1] - limits[1, 0]) * (M - 1));
                 }
             }
+            else
+            {
+                noTimeMonitors = 0;
+            }
 
-
+            signalMonitor = new double[simLength, 1];
 
         }
 
@@ -490,6 +492,10 @@ namespace FDTD_app
                         }
                     }
                 }
+
+
+                signalMonitor[n,0] = dt / e0 * J;
+
 
                 for (int i = 0; i < noTimeMonitors; i++)
                 {

@@ -29,12 +29,19 @@ namespace FDTD_app
 
             dataGridView1.AllowUserToAddRows = false;
 
-            dataGridView1.Columns[1].DefaultCellStyle.Format = "0.000000";
+            //dataGridView1.Columns[1].DefaultCellStyle.Format = "0.000000";
 
             for (int i = 0; i < modes.Length; i++)
             {
                 dataGridView1[0, i].Value = i + 1;
-                dataGridView1[1, i].Value = modes[i];
+                if (modes[i].Imaginary > 0)
+                {
+                    dataGridView1[1, i].Value = modes[i].Real.ToString("0.########") + "+" + modes[i].Imaginary.ToString("0.########") + "i";
+                }
+                else
+                {
+                    dataGridView1[1, i].Value = modes[i].Real.ToString("0.########") + "" + modes[i].Imaginary.ToString("0.########") + "i";
+                }
             }
 
             this.eigenvectors = eigenvectors;

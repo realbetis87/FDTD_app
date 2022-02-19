@@ -42,6 +42,11 @@ namespace FDTD_app
         private TEmode2D fd;
         private ModalSolverModule m1; private Complex[] effectiveIndex; private CSparse.Matrix<Complex> eigenVectors;
 
+        private PolynomialChaos xx1;
+        private OpenFileDialog filesPC;
+        private bool chk = true;
+
+
         private bool oks;
 
         private string folderSave;
@@ -55,7 +60,7 @@ namespace FDTD_app
             InitializeComponent();
 
   
-
+            /*
             //var x3 = new double[4];
 
             //x3[0] = alglib.legendrecalculate(3, 3.3);
@@ -90,7 +95,7 @@ namespace FDTD_app
             }
 
 
-
+            */
             //var (x4,x5) = xx1.Statistics(cond);
 
 
@@ -351,79 +356,42 @@ namespace FDTD_app
 
             fd.Simulation();
 
+            exportData(folderSave + "\\signal.txt", fd.signalMonitor);
+
             if (!(monitor.frequencies == null))
             {
                 for (int k = 0; k < monitor.frequencies.Length; k++)
                 {
-                    using (TextWriter tw = new StreamWriter(folderSave + "\\Ex_f=[" + (monitor.frequencies[k]).ToString() + "].txt"))
+                    var saveMat = new Complex[fd.N, fd.M];
+
+                    for (int i = 0; i < fd.N; i++)
                     {
-                        for (int i = 0; i < fd.N; i++)
+                        for (int j=0; j < fd.M; j++)
                         {
-                            for (int j = 0; j < fd.M; j++)
-                            {
-                                if (fd.efxImag[i, j, k] >= 0)
-                                {
-                                    tw.Write(fd.efxReal[i, j, k] + "+" + fd.efxImag[i, j, k] + "i ");
-                                }
-                                else
-                                {
-                                    tw.Write(fd.efxReal[i, j, k] + "" + fd.efxImag[i, j, k] + "i ");
-                                }
-
-                            }
-
-                            tw.WriteLine();
+                            saveMat[i, j] = new Complex(fd.efxReal[i, j, k], fd.efxImag[i, j, k]);
                         }
                     }
 
-                    using (TextWriter tw = new StreamWriter(folderSave + "\\Ey_f=[" + (monitor.frequencies[k]).ToString() + "].txt"))
+                    exportData(folderSave + "\\Ex_f=[" + (monitor.frequencies[k]).ToString() + "].txt", saveMat);
+
+                    for (int i = 0; i < fd.N; i++)
                     {
-                        for (int i = 0; i < fd.N; i++)
+                        for (int j = 0; j < fd.M; j++)
                         {
-                            for (int j = 0; j < fd.M; j++)
-                            {
-                                if (fd.efyImag[i, j, k] >= 0)
-                                {
-                                    tw.Write(fd.efyReal[i, j, k] + "+" + fd.efyImag[i, j, k] + "i ");
-                                }
-                                else
-                                {
-                                    tw.Write(fd.efyReal[i, j, k] + "" + fd.efyImag[i, j, k] + "i ");
-                                }
-
-                            }
-
-                            tw.WriteLine();
+                            saveMat[i, j] = new Complex(fd.efyReal[i, j, k], fd.efyImag[i, j, k]);
                         }
                     }
+
+                    exportData(folderSave + "\\Ey_f=[" + (monitor.frequencies[k]).ToString() + "].txt", saveMat);
+
                 }
             }
 
-            if (!(monitor.trLocation == null))
+            if (!(monitor.trLocation == null | monitor.trLocation.GetLength(1)==0))
             {
-                using (TextWriter tw = new StreamWriter(folderSave + "\\Ex_transient.txt"))
-                {
-                    for (int i = 0; i < fd.exTimeMonitors.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < fd.exTimeMonitors.GetLength(1); j++)
-                        {
-                            tw.Write(fd.exTimeMonitors[i, j] + " ");
-                        }
-                        tw.WriteLine();
-                    }
-                }
 
-                using (TextWriter tw = new StreamWriter(folderSave + "\\Ey_transient.txt"))
-                {
-                    for (int i = 0; i < fd.eyTimeMonitors.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < fd.eyTimeMonitors.GetLength(1); j++)
-                        {
-                            tw.Write(fd.eyTimeMonitors[i, j] + " ");
-                        }
-                        tw.WriteLine();
-                    }
-                }
+                exportData(folderSave + "\\Ex_transient.txt", fd.exTimeMonitors);
+                exportData(folderSave + "\\Ey_transient.txt", fd.eyTimeMonitors);
 
             }
 
@@ -567,95 +535,241 @@ namespace FDTD_app
                 quadOrderText.Text = polyOrderText.Text;
             }
 
-            var xx1 = new PolynomialChaos(double.Parse(lowerLimitText.Text), double.Parse(upperLimitText.Text), int.Parse(polyOrderText.Text), int.Parse(quadOrderText.Text));
+            xx1 = new PolynomialChaos(double.Parse(lowerLimitText.Text), double.Parse(upperLimitText.Text), int.Parse(polyOrderText.Text), int.Parse(quadOrderText.Text));
 
-            var x3 = xx1.Abscissas;
+            //var x3 = xx1.Abscissas;
 
             var p1 = new EvaluationPoints(xx1.Abscissas);
 
             p1.ShowDialog();
 
-            string regexPattern = @"([-+]?\d+\.?\d*|[-+]?\d*\.?\d+?[e E]+[-+]?\d*)" + @"([\+-])" + @"([-+]?\d+\.?\d*|[-+]?\d*\.?\d+?[e E]+[-+]?\d*)" + @"i" + @"\s*";
-            Regex regex = new Regex(regexPattern);
+        }
 
-
-            var f1 = new OpenFileDialog();
-            f1.Filter = "Txt files|*.txt";
-
-            if (f1.ShowDialog() == DialogResult.OK)
+        public void exportData(string filename, Complex[,] data)
+        {
+            using (TextWriter tw = new StreamWriter(filename))
             {
-                var fileContent = string.Empty;
-                string sFileName = f1.FileName;
+                string st = "";
 
-                folderSave = System.IO.Path.GetDirectoryName(f1.FileName);
-
-                string[][] list = File.ReadAllLines(sFileName).Select(l => l.Split(' ')).ToArray().ToArray();
-
-                int rows = list.Length;
-                int cols = list.Max(subArray => subArray.Length);
-                if (!regex.IsMatch(list[0][cols-1]))
+                for (int i = 0; i < data.GetLength(0); i++)
                 {
-                    cols -= 1;
-                }
-
-                Console.WriteLine(rows + " " + cols);
-
-                var mat2 = new Complex[rows, cols];
-                for (int i = 0; i < rows; i++)
-                {
-                    cols = list[i].Length;
-                    for (int jj = 0; jj < cols; jj++)
+                    for (int j = 0; j < data.GetLength(1); j++)
                     {
-
-                        Match match = regex.Match(list[i][jj]);
-
-                        if (match.Success)
+                        if (data[i, j].Imaginary >= 0)
                         {
-                            double img;
-                            double real = double.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
-
-                            if (match.Groups[2].Value == "+")
-                            {
-                                img = double.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
-                            }
-                            else
-                            {
-                                img = -double.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
-                            }
-
-                            mat2[i, jj] = new Complex(real, img);
+                            st += data[i,j].Real + "+" + data[i,j].Imaginary + "i ";
+                        }
+                        else
+                        {
+                            st += data[i,j].Real + "" + data[i,j].Imaginary + "i ";
                         }
 
-
                     }
+
+                    tw.Write(st.Remove(st.Length - 1));
+                    tw.WriteLine();
+                    st = "";
+
                 }
-
-                using (TextWriter tw = new StreamWriter(folderSave + "\\Ey_f=[test1].txt"))
-                {
-                    for (int i = 0; i < mat2.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < mat2.GetLength(1); j++)
-                        {
-                            if (mat2[i, j].Imaginary >= 0)
-                            {
-                                tw.Write(mat2[i, j].Real + "+" + mat2[i, j].Imaginary + "i ");
-                            }
-                            else
-                            {
-                                tw.Write(mat2[i, j].Real + "" + mat2[i, j].Imaginary + "i ");
-                            }
-
-                        }
-
-                        tw.WriteLine();
-                    }
-                }
-
 
 
             }
+        }
+
+        public void exportData(string filename, double[,] data)
+        {
+            using (TextWriter tw = new StreamWriter(filename))
+            {
+                string st = "";
+
+                for (int i = 0; i < data.GetLength(0); i++)
+                {
+                    for (int j = 0; j < data.GetLength(1); j++)
+                    {
+                        st += data[i, j] + " ";
+                    }
+
+                    tw.Write(st.Remove(st.Length - 1));
+                    tw.WriteLine();
+                    st = "";
+
+                }
+            }
+        }
+
+        private void evalSelectionButton_Click(object sender, EventArgs e)
+        {
+
+            filesPC = new OpenFileDialog();
+            filesPC.Filter = "Txt files|*.txt";
+            filesPC.Multiselect = true;
+
+            if (filesPC.ShowDialog() == DialogResult.OK)
+            {
+                var fileContent = string.Empty;
+                string sFileName = filesPC.FileNames[0];
+
+                if (filesPC.FileNames.Length != xx1.Abscissas.Length)
+                {
+                    MessageBox.Show("The number of the selected files does not match to the evaluation points. Please select the correct number of files.", "Wrong number of selected files!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    folderSave = System.IO.Path.GetDirectoryName(filesPC.FileName);
+
+                    string[][] list = File.ReadAllLines(filesPC.FileNames[0]).Select(l => l.Split(' ')).ToArray().ToArray();
+                    int rows = list.Length;
+                    int cols = list.Max(subArray => subArray.Length);
+
+                    for (int i = 0; i < filesPC.FileNames.Length; i++)
+                    {
+                        list = File.ReadAllLines(filesPC.FileNames[i]).Select(l => l.Split(' ')).ToArray().ToArray();
+                        if (list.Length != rows | list.Max(subArray => subArray.Length) != cols)
+                        {
+                            MessageBox.Show("The data dimensions of the selected files do not match.", "Wrong files are selected!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            chk = false;
+                            break;
+                        }
+
+                    }
 
 
+ 
+                }
+
+                if (chk)
+                {
+                    statButton.Enabled = true;
+                }
+
+            }
+        }
+
+        private void statButton_Click(object sender, EventArgs e)
+        {
+            string regexPattern = @"([-+]?\d+\.?\d*|[-+]?\d*\.?\d+?[e E]+[-+]?\d*)" + @"([\+-])" + @"([-+]?\d+\.?\d*|[-+]?\d*\.?\d+?[e E]+[-+]?\d*)" + @"i" + @"\s*";
+
+            Regex regex = new Regex(regexPattern);
+
+
+
+
+            if (chk)
+            {
+                // Check data (Complex of Real)
+                string[][] list = File.ReadAllLines(filesPC.FileNames[0]).Select(l => l.Split(' ')).ToArray().ToArray();
+                int rows = list.Length;
+                int cols = list.Max(subArray => subArray.Length);
+                
+                if (list[0][0].IndexOf("i") > 0)
+                {
+                    // Complex data
+
+                    if (!regex.IsMatch(list[0][cols - 1]))
+                    {
+                        cols -= 1;
+                    }
+
+
+                    var evalMatrix = new Complex[rows, cols, filesPC.FileNames.Length];
+
+                    for (int k = 0; k < filesPC.FileNames.Length; k++)
+                    {
+                        list = File.ReadAllLines(filesPC.FileNames[k]).Select(l => l.Split(' ')).ToArray().ToArray();
+
+                        for (int i = 0; i < rows; i++)
+                        {
+                            cols = list[i].Length;
+                            for (int jj = 0; jj < cols; jj++)
+                            {
+
+                                Match match = regex.Match(list[i][jj]);
+
+                                if (match.Success)
+                                {
+                                    double img;
+                                    double real = double.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+
+                                    if (match.Groups[2].Value == "+")
+                                    {
+                                        img = double.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
+                                    }
+                                    else
+                                    {
+                                        img = -double.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
+                                    }
+
+                                    evalMatrix[i, jj, k] = new Complex(real, img);
+                                }
+
+                            }
+                        }
+                    }
+
+                    Complex[] evalData = new Complex[evalMatrix.GetLength(2)];
+
+                    Complex[,] meanValue = new Complex[evalMatrix.GetLength(0), evalMatrix.GetLength(1)];
+                    Complex[,] stdValue = new Complex[evalMatrix.GetLength(0), evalMatrix.GetLength(1)];
+
+                    for (int i = 0; i < evalMatrix.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < evalMatrix.GetLength(1); j++)
+                        {
+                            for (int k = 0; k < evalMatrix.GetLength(2); k++)
+                            {
+                                evalData[k] = evalMatrix[i, j, k];
+                            }
+                            (meanValue[i, j], stdValue[i, j]) = xx1.Statistics(evalData);
+                        }
+                    }
+
+                    exportData(folderSave + "\\meanValue.txt", meanValue);
+                    exportData(folderSave + "\\stdValue.txt", stdValue);
+
+                }
+                else
+                {
+                    // Real data
+
+                    var evalMatrix = new double[rows, cols, filesPC.FileNames.Length];
+
+                    for (int k = 0; k < filesPC.FileNames.Length; k++)
+                    {
+                        list = File.ReadAllLines(filesPC.FileNames[k]).Select(l => l.Split(' ')).ToArray().ToArray();
+
+                        for (int i = 0; i < rows; i++)
+                        {
+                            cols = list[i].Length;
+                            for (int jj = 0; jj < cols; jj++)
+                            {
+                                evalMatrix[i, jj, k] = double.Parse(list[i][jj]);
+                            }
+                        }
+                    }
+
+                    double[] evalData = new double[evalMatrix.GetLength(2)];
+
+                    double[,] meanValue = new double[evalMatrix.GetLength(0), evalMatrix.GetLength(1)];
+                    double[,] stdValue = new double[evalMatrix.GetLength(0), evalMatrix.GetLength(1)];
+
+                    for (int i = 0; i < evalMatrix.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < evalMatrix.GetLength(1); j++)
+                        {
+                            for (int k = 0; k < evalMatrix.GetLength(2); k++)
+                            {
+                                evalData[k] = evalMatrix[i, j, k];
+                            }
+                            (meanValue[i, j], stdValue[i, j]) = xx1.Statistics(evalData);
+                        }
+                    }
+
+                    exportData(folderSave + "\\meanValue.txt", meanValue);
+                    exportData(folderSave + "\\stdValue.txt", stdValue);
+
+                }
+
+            }
         }
     }
 }

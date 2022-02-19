@@ -90,6 +90,34 @@ namespace FDTD_app
             return (meanValue, stdValue);
         }
 
+        public (double, double) Statistics(double[] EvalData)
+        {
 
+            var coeffs = new double[PolynomialOrder];
+
+
+            for (int k = 0; k < PolynomialOrder; k++)
+            {
+                coeffs[k] = 0;
+                for (int i = 0; i < N; i++)
+                {
+                    coeffs[k] += EvalData[i] * p0[k, i] * Weights[i] * d / pq[k];
+                }
+
+            }
+
+            var meanValue = coeffs[0];
+
+            double stdValue = 0;
+
+            for (int k = 1; k < PolynomialOrder; k++)
+            {
+                stdValue += coeffs[k] * coeffs[k] * pq[k];
+            }
+
+            stdValue = Math.Sqrt(stdValue);
+
+            return (meanValue, stdValue);
+        }
     }
 }

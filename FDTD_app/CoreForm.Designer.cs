@@ -87,17 +87,20 @@ namespace FDTD_app
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.aboutButton = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.lowerLimitText = new System.Windows.Forms.TextBox();
-            this.upperLimitText = new System.Windows.Forms.TextBox();
-            this.polyOrderText = new System.Windows.Forms.TextBox();
-            this.quadOrderText = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
+            this.statButton = new System.Windows.Forms.Button();
+            this.evalSelectionButton = new System.Windows.Forms.Button();
             this.pointsButton = new System.Windows.Forms.Button();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.quadOrderText = new System.Windows.Forms.TextBox();
+            this.polyOrderText = new System.Windows.Forms.TextBox();
+            this.upperLimitText = new System.Windows.Forms.TextBox();
+            this.lowerLimitText = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -107,6 +110,7 @@ namespace FDTD_app
             this.groupBox4.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // frequencyText
@@ -801,119 +805,179 @@ namespace FDTD_app
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.pointsButton);
-            this.groupBox5.Controls.Add(this.label16);
-            this.groupBox5.Controls.Add(this.label15);
-            this.groupBox5.Controls.Add(this.label14);
-            this.groupBox5.Controls.Add(this.label13);
-            this.groupBox5.Controls.Add(this.label12);
-            this.groupBox5.Controls.Add(this.label11);
-            this.groupBox5.Controls.Add(this.quadOrderText);
-            this.groupBox5.Controls.Add(this.polyOrderText);
-            this.groupBox5.Controls.Add(this.upperLimitText);
-            this.groupBox5.Controls.Add(this.lowerLimitText);
-            this.groupBox5.Location = new System.Drawing.Point(634, 152);
+            this.groupBox5.Controls.Add(this.tableLayoutPanel5);
+            this.groupBox5.Location = new System.Drawing.Point(639, 140);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(253, 199);
+            this.groupBox5.Size = new System.Drawing.Size(211, 265);
             this.groupBox5.TabIndex = 52;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Polynomial Chaos Analysis";
             // 
-            // lowerLimitText
+            // tableLayoutPanel5
             // 
-            this.lowerLimitText.Location = new System.Drawing.Point(74, 46);
-            this.lowerLimitText.Name = "lowerLimitText";
-            this.lowerLimitText.Size = new System.Drawing.Size(59, 20);
-            this.lowerLimitText.TabIndex = 0;
-            this.lowerLimitText.Text = "0";
-            // 
-            // upperLimitText
-            // 
-            this.upperLimitText.Location = new System.Drawing.Point(148, 46);
-            this.upperLimitText.Name = "upperLimitText";
-            this.upperLimitText.Size = new System.Drawing.Size(59, 20);
-            this.upperLimitText.TabIndex = 1;
-            this.upperLimitText.Text = "0.5";
-            // 
-            // polyOrderText
-            // 
-            this.polyOrderText.Location = new System.Drawing.Point(74, 94);
-            this.polyOrderText.Name = "polyOrderText";
-            this.polyOrderText.Size = new System.Drawing.Size(59, 20);
-            this.polyOrderText.TabIndex = 2;
-            this.polyOrderText.Text = "8";
-            // 
-            // quadOrderText
-            // 
-            this.quadOrderText.Location = new System.Drawing.Point(148, 94);
-            this.quadOrderText.Name = "quadOrderText";
-            this.quadOrderText.Size = new System.Drawing.Size(59, 20);
-            this.quadOrderText.TabIndex = 3;
-            this.quadOrderText.Text = "12";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(77, 28);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(36, 13);
-            this.label11.TabIndex = 4;
-            this.label11.Text = "Lower";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(157, 30);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(36, 13);
-            this.label12.TabIndex = 5;
-            this.label12.Text = "Upper";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(76, 78);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(57, 13);
-            this.label13.TabIndex = 6;
-            this.label13.Text = "Polynomial";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(147, 77);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(60, 13);
-            this.label14.TabIndex = 7;
-            this.label14.Text = "Quadrature";
+            this.tableLayoutPanel5.ColumnCount = 3;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.80952F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 38.09524F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 38.09524F));
+            this.tableLayoutPanel5.Controls.Add(this.label16, 0, 3);
+            this.tableLayoutPanel5.Controls.Add(this.statButton, 1, 7);
+            this.tableLayoutPanel5.Controls.Add(this.label15, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.evalSelectionButton, 1, 6);
+            this.tableLayoutPanel5.Controls.Add(this.label11, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.pointsButton, 1, 4);
+            this.tableLayoutPanel5.Controls.Add(this.label12, 2, 0);
+            this.tableLayoutPanel5.Controls.Add(this.quadOrderText, 2, 3);
+            this.tableLayoutPanel5.Controls.Add(this.label14, 2, 2);
+            this.tableLayoutPanel5.Controls.Add(this.polyOrderText, 1, 3);
+            this.tableLayoutPanel5.Controls.Add(this.label13, 1, 2);
+            this.tableLayoutPanel5.Controls.Add(this.upperLimitText, 2, 1);
+            this.tableLayoutPanel5.Controls.Add(this.lowerLimitText, 1, 1);
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(6, 19);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.RowCount = 8;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 7.003934F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.28515F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.28515F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.28515F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.28515F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.28515F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.28515F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.28515F));
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(200, 239);
+            this.tableLayoutPanel5.TabIndex = 13;
             // 
             // label15
             // 
+            this.label15.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(35, 49);
+            this.label15.Location = new System.Drawing.Point(9, 25);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(33, 13);
+            this.label15.Size = new System.Drawing.Size(28, 13);
             this.label15.TabIndex = 8;
-            this.label15.Text = "Limits";
+            this.label15.Text = "Limit";
             // 
             // label16
             // 
+            this.label16.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(35, 97);
+            this.label16.Location = new System.Drawing.Point(7, 87);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(33, 13);
             this.label16.TabIndex = 9;
             this.label16.Text = "Order";
             // 
+            // statButton
+            // 
+            this.statButton.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.tableLayoutPanel5.SetColumnSpan(this.statButton, 2);
+            this.statButton.Enabled = false;
+            this.statButton.Location = new System.Drawing.Point(73, 209);
+            this.statButton.Name = "statButton";
+            this.statButton.Size = new System.Drawing.Size(100, 23);
+            this.statButton.TabIndex = 12;
+            this.statButton.Text = "Export Statistics";
+            this.statButton.UseVisualStyleBackColor = true;
+            this.statButton.Click += new System.EventHandler(this.statButton_Click);
+            // 
+            // evalSelectionButton
+            // 
+            this.evalSelectionButton.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.tableLayoutPanel5.SetColumnSpan(this.evalSelectionButton, 2);
+            this.evalSelectionButton.Location = new System.Drawing.Point(73, 175);
+            this.evalSelectionButton.Name = "evalSelectionButton";
+            this.evalSelectionButton.Size = new System.Drawing.Size(100, 23);
+            this.evalSelectionButton.TabIndex = 11;
+            this.evalSelectionButton.Text = "Select Files...";
+            this.evalSelectionButton.UseVisualStyleBackColor = true;
+            this.evalSelectionButton.Click += new System.EventHandler(this.evalSelectionButton_Click);
+            // 
             // pointsButton
             // 
-            this.pointsButton.Location = new System.Drawing.Point(93, 124);
+            this.pointsButton.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.tableLayoutPanel5.SetColumnSpan(this.pointsButton, 2);
+            this.pointsButton.Location = new System.Drawing.Point(73, 113);
             this.pointsButton.Name = "pointsButton";
             this.pointsButton.Size = new System.Drawing.Size(100, 23);
             this.pointsButton.TabIndex = 10;
             this.pointsButton.Text = "Evaluation Points";
             this.pointsButton.UseVisualStyleBackColor = true;
             this.pointsButton.Click += new System.EventHandler(this.pointsButton_Click);
+            // 
+            // label14
+            // 
+            this.label14.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(131, 65);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(60, 13);
+            this.label14.TabIndex = 7;
+            this.label14.Text = "Quadrature";
+            // 
+            // label13
+            // 
+            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(56, 65);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(57, 13);
+            this.label13.TabIndex = 6;
+            this.label13.Text = "Polynomial";
+            // 
+            // label12
+            // 
+            this.label12.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(143, 3);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(36, 13);
+            this.label12.TabIndex = 5;
+            this.label12.Text = "Upper";
+            // 
+            // label11
+            // 
+            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(67, 3);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(36, 13);
+            this.label11.TabIndex = 4;
+            this.label11.Text = "Lower";
+            // 
+            // quadOrderText
+            // 
+            this.quadOrderText.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.quadOrderText.Location = new System.Drawing.Point(132, 83);
+            this.quadOrderText.Name = "quadOrderText";
+            this.quadOrderText.Size = new System.Drawing.Size(59, 20);
+            this.quadOrderText.TabIndex = 3;
+            this.quadOrderText.Text = "12";
+            // 
+            // polyOrderText
+            // 
+            this.polyOrderText.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.polyOrderText.Location = new System.Drawing.Point(55, 83);
+            this.polyOrderText.Name = "polyOrderText";
+            this.polyOrderText.Size = new System.Drawing.Size(59, 20);
+            this.polyOrderText.TabIndex = 2;
+            this.polyOrderText.Text = "8";
+            // 
+            // upperLimitText
+            // 
+            this.upperLimitText.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.upperLimitText.Location = new System.Drawing.Point(132, 21);
+            this.upperLimitText.Name = "upperLimitText";
+            this.upperLimitText.Size = new System.Drawing.Size(59, 20);
+            this.upperLimitText.TabIndex = 1;
+            this.upperLimitText.Text = "0.5";
+            // 
+            // lowerLimitText
+            // 
+            this.lowerLimitText.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.lowerLimitText.Location = new System.Drawing.Point(55, 21);
+            this.lowerLimitText.Name = "lowerLimitText";
+            this.lowerLimitText.Size = new System.Drawing.Size(59, 20);
+            this.lowerLimitText.TabIndex = 0;
+            this.lowerLimitText.Text = "0";
             // 
             // CoreForm
             // 
@@ -941,7 +1005,8 @@ namespace FDTD_app
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
             this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1005,8 +1070,6 @@ namespace FDTD_app
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.Button indexButton;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label12;
@@ -1016,6 +1079,11 @@ namespace FDTD_app
         private System.Windows.Forms.TextBox upperLimitText;
         private System.Windows.Forms.TextBox lowerLimitText;
         private System.Windows.Forms.Button pointsButton;
+        private System.Windows.Forms.Button evalSelectionButton;
+        private System.Windows.Forms.Button statButton;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label16;
     }
 }
 
