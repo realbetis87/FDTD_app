@@ -72,6 +72,19 @@ namespace FDTD_app
             return (A, G);
         }
 
+        static public (double, double, double) anisotropic_conductivity(double T, double G, double mc, double B0)
+        {
+
+            G = G / Hz2eV * 2 * Math.PI;
+            mc *= qe;
+
+            var A = 2 * qe * qe * kb * T * Math.Log(2 * Math.Cosh(mc / 2 / kb / T)) / (Math.PI * rh * rh);
+
+            var wc = qe * B0 * uf * uf / Math.Abs(mc);
+
+            return (A, wc, G);
+        }
+
         static public (Complex, Complex) anisotropic_conductivity(double T, double G, double mc, double B0, double f)
         {
             G = G / Hz2eV * 2 * Math.PI;

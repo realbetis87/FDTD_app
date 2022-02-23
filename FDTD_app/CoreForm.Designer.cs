@@ -88,17 +88,17 @@ namespace FDTD_app
             this.aboutButton = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.statButton = new System.Windows.Forms.Button();
+            this.label15 = new System.Windows.Forms.Label();
             this.evalSelectionButton = new System.Windows.Forms.Button();
-            this.pointsButton = new System.Windows.Forms.Button();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
+            this.pointsButton = new System.Windows.Forms.Button();
+            this.label12 = new System.Windows.Forms.Label();
             this.quadOrderText = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.polyOrderText = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
             this.upperLimitText = new System.Windows.Forms.TextBox();
             this.lowerLimitText = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
@@ -846,16 +846,6 @@ namespace FDTD_app
             this.tableLayoutPanel5.Size = new System.Drawing.Size(200, 239);
             this.tableLayoutPanel5.TabIndex = 13;
             // 
-            // label15
-            // 
-            this.label15.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(9, 25);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(28, 13);
-            this.label15.TabIndex = 8;
-            this.label15.Text = "Limit";
-            // 
             // label16
             // 
             this.label16.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -879,6 +869,16 @@ namespace FDTD_app
             this.statButton.UseVisualStyleBackColor = true;
             this.statButton.Click += new System.EventHandler(this.statButton_Click);
             // 
+            // label15
+            // 
+            this.label15.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(9, 25);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(28, 13);
+            this.label15.TabIndex = 8;
+            this.label15.Text = "Limit";
+            // 
             // evalSelectionButton
             // 
             this.evalSelectionButton.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -890,6 +890,16 @@ namespace FDTD_app
             this.evalSelectionButton.Text = "Select Files...";
             this.evalSelectionButton.UseVisualStyleBackColor = true;
             this.evalSelectionButton.Click += new System.EventHandler(this.evalSelectionButton_Click);
+            // 
+            // label11
+            // 
+            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(67, 3);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(36, 13);
+            this.label11.TabIndex = 4;
+            this.label11.Text = "Lower";
             // 
             // pointsButton
             // 
@@ -903,26 +913,6 @@ namespace FDTD_app
             this.pointsButton.UseVisualStyleBackColor = true;
             this.pointsButton.Click += new System.EventHandler(this.pointsButton_Click);
             // 
-            // label14
-            // 
-            this.label14.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(131, 65);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(60, 13);
-            this.label14.TabIndex = 7;
-            this.label14.Text = "Quadrature";
-            // 
-            // label13
-            // 
-            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(56, 65);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(57, 13);
-            this.label13.TabIndex = 6;
-            this.label13.Text = "Polynomial";
-            // 
             // label12
             // 
             this.label12.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
@@ -933,16 +923,6 @@ namespace FDTD_app
             this.label12.TabIndex = 5;
             this.label12.Text = "Upper";
             // 
-            // label11
-            // 
-            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(67, 3);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(36, 13);
-            this.label11.TabIndex = 4;
-            this.label11.Text = "Lower";
-            // 
             // quadOrderText
             // 
             this.quadOrderText.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -952,6 +932,16 @@ namespace FDTD_app
             this.quadOrderText.TabIndex = 3;
             this.quadOrderText.Text = "12";
             // 
+            // label14
+            // 
+            this.label14.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(131, 65);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(60, 13);
+            this.label14.TabIndex = 7;
+            this.label14.Text = "Quadrature";
+            // 
             // polyOrderText
             // 
             this.polyOrderText.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -960,6 +950,16 @@ namespace FDTD_app
             this.polyOrderText.Size = new System.Drawing.Size(59, 20);
             this.polyOrderText.TabIndex = 2;
             this.polyOrderText.Text = "8";
+            // 
+            // label13
+            // 
+            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(56, 65);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(57, 13);
+            this.label13.TabIndex = 6;
+            this.label13.Text = "Polynomial";
             // 
             // upperLimitText
             // 

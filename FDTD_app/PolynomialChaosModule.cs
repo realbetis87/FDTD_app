@@ -41,6 +41,9 @@ namespace FDTD_app
             of = (iEnd + iBegin) / 2;
 
             GaussLegendreRule rule = new GaussLegendreRule(iBegin, iEnd, QuadratureOrder);
+
+            
+
             Weights = rule.Weights;
             Abscissas = rule.Abscissas;
 
