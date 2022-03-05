@@ -19,6 +19,9 @@ using CSparse.Interop.Spectra;
 
 using Complex = System.Numerics.Complex;
 
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics;
+
 namespace FDTD_app
 {
     public partial class GrapheneConductivity
@@ -122,6 +125,379 @@ namespace FDTD_app
             return (sd, so);
         }
 
+
+
+        static public Vector<Complex> VectorFitting(double[] freq, Vector<Complex> c0, Complex[] poles)
+        {
+
+            var s = new Complex[21];
+
+            for (int i = 0; i < 21; i++)
+            {
+                s[i] = new Complex(0, freq[i]);
+            }
+
+            var LAMBD = Matrix<Complex>.Build.Diagonal(poles);
+            int Ns = freq.Length; int N = poles.Length; int Nc = 1;
+
+            var B = Vector<Complex>.Build.Dense(N, 1);
+            var I = Matrix<double>.Build.Diagonal(N, 21);
+
+
+            int offs = 1;
+
+
+            var cindex = Vector<double>.Build.Dense(N, 0);
+
+            for (int m = 0; m < N; m++)
+            {
+                if (LAMBD[m, m].Imaginary != 0)
+                {
+                    if (m == 1)
+                    {
+                        cindex[m] = 1;
+                    }
+                    else
+                    {
+                        if (cindex[m - 1] == 0 | cindex[m - 1] == 2)
+                        {
+                            cindex[m] = 1; cindex[m + 1] = 2;
+                        }
+                        else
+                        {
+                            cindex[m] = 2;
+                        }
+                    }
+
+                }
+
+            }
+
+
+            var Dk = Matrix<Complex>.Build.Dense(Ns, N + 1, 1);
+
+            for (int m = 0; m < N; m++)
+            {
+                if (cindex[m] == 0)
+                {
+                    for (int jj = 0; jj < Ns; jj++)
+                    {
+                        Dk[jj, m] = 1 / (s[jj] - LAMBD[m, m]);
+                    }
+                }
+                else if (cindex[m] == 1)
+                {
+                    for (int jj = 0; jj < Ns; jj++)
+                    {
+                        Dk[jj, m] = 1 / (s[jj] - LAMBD[m, m]) + 1 / (s[jj] - Complex.Conjugate(LAMBD[m, m]));
+                        Dk[jj, m + 1] = (1 / (s[jj] - LAMBD[m, m]) - 1 / (s[jj] - Complex.Conjugate(LAMBD[m, m]))) * (new Complex(0, 1));
+                    }
+                }
+            }
+
+            double scale = 0;
+
+            for (int m = 0; m < Nc; m++)
+            {
+                scale = scale + c0.Norm(2) / Ns;
+            }
+
+
+            var AA = Matrix<Complex>.Build.Dense(Nc * (N + 1), N + 1, 0);
+            var bb = Vector<Complex>.Build.Dense(Nc * (N + 1), 0);
+            var Escale = Vector<double>.Build.Dense(N + 1, 0);
+
+            for (int n = 0; n < Nc; n++)
+            {
+                var A1 = Matrix<Complex>.Build.Dense(Ns, (N + offs) + N + 1, 0);
+
+                for (int m = 0; m < N + offs; m++)
+                {
+                    for (int jj = 0; jj < Ns; jj++)
+                    {
+                        A1[jj, m] = Dk[jj, m];
+                    }
+                }
+                int inda = N + offs;
+                for (int m = 0; m < N + 1; m++)
+                {
+                    for (int jj = 0; jj < Ns; jj++)
+                    {
+                        A1[jj, inda + m] = -Dk[jj, m] * c0[jj]; // c0 is a Vector
+                    }
+                }
+
+
+
+
+                var A = Matrix<double>.Build.Dense(2 * Ns + 1, (N + offs) + N + 1, 0);
+
+                for (int i = 0; i < Ns; i++)
+                {
+                    for (int j = 0; j < N + offs + N + 1; j++)
+                    {
+                        A[i, j] = A1[i, j].Real;
+                        A[i + Ns, j] = A1[i, j].Imaginary;
+
+                    }
+                }
+
+
+                var offset = N + offs;
+
+                if (n == Nc - 1)
+                {
+                    for (int mm = 0; mm < N + 1; mm++)
+                    {
+                        var sm = new Complex(0, 0);
+                        for (int i = 0; i < Ns; i++)
+                        {
+                            sm = sm + Dk[i, mm] * scale;
+                        }
+
+                        A[2 * Ns, offset + mm] = sm.Real;
+                    }
+                }
+
+
+                var qr = A.QR();
+
+                int ind1 = N + offs;
+                int ind2 = N + offs + N + 1;
+
+                for (int i = 0; i < ind2 - ind1; i++)
+                {
+                    for (int j = 0; j < ind2 - ind1; j++)
+                    {
+                        AA[i + n * (N + 1), j] = qr.R[i + ind1, j + ind1];
+                    }
+                }
+
+                if (n == Nc - 1)
+                {
+                    for (int i = 0; i < ind2 - ind1; i++)
+                    {
+                        bb[i + n * (N + 1)] = qr.Q[qr.Q.RowCount - 1, N + offs + i] * Ns * scale;
+                    }
+                }
+
+
+            }
+
+            for (int i = 0; i < AA.ColumnCount; i++)
+            {
+                Escale[i] = 1 / AA.ColumnNorms(2)[i];
+                for (int j = 0; j < AA.RowCount; j++)
+                {
+                    AA[j, i] = Escale[i] * AA[j, i];
+                }
+            }
+
+
+            var x = AA.Solve(bb);
+
+            for (int i = 0; i < x.Count; i++)
+            {
+                x[i] = x[i] * Escale[i];
+            }
+
+            // Missing part: D extreme values
+
+
+            var C = Vector<Complex>.Build.Dense(x.Count - 1);
+            for (int i = 0; i < C.Count; i++)
+            {
+                C[i] = x[i];
+            }
+            var D = x[x.Count - 1];
+
+            for (int m = 0; m < N; m++)
+            {
+                if (cindex[m] == 1)
+                {
+                    var r1 = C[m]; var r2 = C[m + 1];
+                    C[m] = r1 + new Complex(0, 1) * r2;
+                    C[m + 1] = r1 - new Complex(0, 1) * r2;
+                }
+            }
+
+
+            var m1 = 0;
+
+            for (int n = 0; n < N; n++)
+            {
+                if (m1 < N)
+                {
+                    if (LAMBD[m1, m1].Magnitude > Math.Abs(LAMBD[m1, m1].Real))
+                    {
+                        LAMBD[m1 + 1, m1] = -LAMBD[m1, m1].Imaginary;
+                        LAMBD[m1, m1 + 1] = LAMBD[m1, m1].Imaginary;
+                        LAMBD[m1, m1] = LAMBD[m1, m1].Real;
+                        LAMBD[m1 + 1, m1 + 1] = LAMBD[m1, m1];
+                        B[m1] = 2; B[m1 + 1] = 0;
+                        var koko = C[m1]; C[m1] = koko.Real; C[m1 + 1] = koko.Imaginary;
+                        m1 = m1 + 1;
+                    }
+                }
+            }
+
+            var ZER = LAMBD - B.OuterProduct(C) / D;
+
+            var roetter = ZER.Evd().EigenValues;
+
+
+
+
+            for (int i = 0; i < roetter.Count; i++)
+            {
+                if (roetter[i].Real > 0) // Check pole stability
+                {
+                    roetter[i] = roetter[i] - 2 * roetter[i].Real; //Forcing unstable poles to be stable...
+                }
+
+                if (Math.Abs(roetter[i].Real / roetter[i].Imaginary) > 1e10)
+                {
+                    roetter[i] = roetter[i].Real;
+                }
+            }
+
+
+            for (int i = 1; i < roetter.Count; i++)
+            {
+                var val = roetter[i];
+                int flag = 0;
+                for (int j = i - 1; j >= 0 && flag != 1;)
+                {
+                    if (val.Magnitude < roetter[j].Magnitude)
+                    {
+                        roetter[j + 1] = roetter[j];
+                        j--;
+                        roetter[j + 1] = val;
+                    }
+                    else flag = 1;
+                }
+            }
+
+
+
+            for (int m = 0; m < N; m++)
+            {
+                LAMBD[m, m] = roetter[m];
+
+                if (LAMBD[m, m].Imaginary != 0)
+                {
+                    if (m == 0)
+                    {
+                        cindex[m] = 1;
+                    }
+                    else
+                    {
+                        if (cindex[m - 1] == 0 | cindex[m - 1] == 2)
+                        {
+                            cindex[m] = 1; cindex[m + 1] = 2;
+                        }
+                        else
+                        {
+                            cindex[m] = 2;
+                        }
+                    }
+
+                }
+
+            }
+
+            for (int m = 0; m < N; m++)
+            {
+                if (cindex[m] == 0)
+                {
+                    for (int jj = 0; jj < Ns; jj++)
+                    {
+                        Dk[jj, m] = 1 / (s[jj] - LAMBD[m, m]);
+                    }
+                }
+                else if (cindex[m] == 1)
+                {
+                    for (int jj = 0; jj < Ns; jj++)
+                    {
+                        Dk[jj, m] = 1 / (s[jj] - LAMBD[m, m]) + 1 / (s[jj] - Complex.Conjugate(LAMBD[m, m]));
+                        Dk[jj, m + 1] = (1 / (s[jj] - LAMBD[m, m]) - 1 / (s[jj] - Complex.Conjugate(LAMBD[m, m]))) * (new Complex(0, 1));
+                    }
+                }
+            }
+
+
+            for (int n = 0; n < Nc; n++)
+            {
+                var A = Matrix<double>.Build.Dense(2 * Ns, N + 1, 0);
+                var BB = Vector<double>.Build.Dense(2 * Ns, 0);
+
+                for (int i = 0; i < Ns; i++)
+                {
+                    for (int j = 0; j < N; j++)
+                    {
+                        A[i, j] = Dk[i, j].Real;
+                        A[i + Ns, j] = Dk[i, j].Imaginary;
+                    }
+                    A[i, N] = 1; A[i + Ns, N] = 0;
+
+
+                    BB[i] = c0[i].Real;
+                    BB[i + Ns] = c0[i].Imaginary;
+                }
+
+                for (int i = 0; i < A.ColumnCount; i++)
+                {
+                    Escale[i] = 1 / A.ColumnNorms(2)[i];
+                    for (int j = 0; j < A.RowCount; j++)
+                    {
+                        A[j, i] = Escale[i] * A[j, i];
+                    }
+                }
+
+                var x1 = A.Solve(BB);
+
+                for (int i = 0; i < x1.Count; i++)
+                {
+                    x1[i] = x1[i] * Escale[i];
+                }
+
+                for (int i = 0; i < C.Count; i++)
+                {
+                    C[i] = x1[i];
+                }
+
+                D = x1[x1.Count - 1];
+
+                for (int m = 0; m < N; m++)
+                {
+                    if (cindex[m] == 1)
+                    {
+                        var r1 = C[m]; var r2 = C[m + 1];
+                        C[m] = r1 + new Complex(0, 1) * r2;
+                        C[m + 1] = r1 - new Complex(0, 1) * r2;
+                    }
+                }
+
+            }
+
+            var Dc = Matrix<Complex>.Build.Dense(Ns, N, 1);
+
+            for (int m = 0; m < N; m++)
+            {
+
+                for (int jj = 0; jj < Ns; jj++)
+                {
+                    Dc[jj, m] = 1 / (s[jj] - LAMBD[m, m]);
+                }
+
+            }
+
+            var fit = Dc.Multiply(C);
+
+            fit = fit + D;
+
+            return fit;
+        }
 
     }
 }
