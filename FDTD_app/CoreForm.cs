@@ -492,15 +492,6 @@ namespace FDTD_app
 
             var fit = GrapheneConductivity.VectorFitting(f0, c0, poles);
 
-            for (int i = 0; i < 21; i++)
-            {
-                chart1.Series[0].Points.AddXY(f0[i] / 1e12, c0[i].Real);
-
-                chart1.Series[1].Points.AddXY(f0[i] / 1e12, fit[i].Real);
-            }
-
-
-
 
 
             /*
@@ -551,7 +542,7 @@ namespace FDTD_app
 
         }
 
-
+        /*
         private void chart1_MouseClick(object sender, MouseEventArgs e)
         {
             var chart = (Chart)sender;
@@ -607,6 +598,7 @@ namespace FDTD_app
             }
             catch { }
         }
+        */
 
         static public int[,] resizePixels(int[,] mat1, int w2, int h2)
         {
